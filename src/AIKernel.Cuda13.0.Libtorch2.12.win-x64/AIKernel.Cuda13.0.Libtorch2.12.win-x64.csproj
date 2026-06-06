@@ -18,8 +18,8 @@
     <Authors>Takuya Sogawa</Authors>
     <Company>AIKernel-NET</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/AIKernel-NET/AIKernel.Cuda13.0.Libtorch2.12.win-x64</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AIKernel-NET/AIKernel.Cuda13.0.Libtorch2.12.win-x64</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AIKernel-NET/AIKernel.Cuda13.0</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AIKernel-NET/AIKernel.Cuda13.0</RepositoryUrl>
     <Copyright>Copyright © 2026 Takuya Sogawa of AIKernel-NET</Copyright>
     <PackageTags>aikernel;capability;cuda;cuda13;libtorch;native-abi;gpu;llm;slm</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
