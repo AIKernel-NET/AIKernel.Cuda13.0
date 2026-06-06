@@ -17,6 +17,9 @@ Install the full runtime package by downloading the matching GitHub Release
 asset, adding its folder as a local NuGet source, and installing this package id
 with `--source` pointing at that local folder.
 
+See `docs/package-distribution.md` for the detailed split-distribution
+checklist.
+
 The public C ABI remains:
 
 - `load_model`

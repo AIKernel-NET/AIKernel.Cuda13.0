@@ -9,6 +9,9 @@ separated from AIKernel.Core.
 AIKernel.Core is CUDA-free. Install this package only on trusted GPU hosts that
 explicitly opt in to CUDA execution.
 
+For the full split-distribution rules, see
+[`docs/package-distribution.md`](docs/package-distribution.md).
+
 ## Package Model
 
 This Capability has two package artifacts with the same package id and version:
@@ -142,6 +145,9 @@ The metadata package and the full package intentionally share the same package
 id and version. Runtime users should install with `--source` pointing at the
 local folder containing the downloaded full package so NuGet selects the full
 runtime package instead of the NuGet.org metadata package.
+
+See [`docs/package-distribution.md`](docs/package-distribution.md) for the
+publisher and consumer checklist.
 
 ## Python
 
