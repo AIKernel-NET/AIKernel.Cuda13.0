@@ -34,6 +34,7 @@
   <ItemGroup>
     <PackageReference Include="AIKernel.Abstractions" Version="0.0.5" />
     <PackageReference Include="AIKernel.Core" Version="0.0.5" />
+    <PackageReference Include="AIKernel.Kernel" Version="0.0.5" />
     <PackageReference Include="AIKernel.Dtos" Version="0.0.5" />
     <PackageReference Include="AIKernel.Enums" Version="0.0.5" />
   </ItemGroup>
