@@ -54,6 +54,33 @@ The package project uses these defaults when packing runtime assets:
 Override these MSBuild properties if your CI extracts LibTorch or native build
 artifacts elsewhere.
 
+## Release Verification
+
+Before publishing, verify both managed and native surfaces:
+
+```powershell
+dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
+dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
+cmake --build native/build/win-x64 --config Release
+```
+
+The `.nupkg` should contain:
+
+- `lib/net10.0/AIKernel.Cuda13.0.Libtorch2.12.win-x64.dll`
+- `runtimes/win-x64/native/libtorch_bridge.dll`
+- LibTorch / CUDA runtime DLLs under `runtimes/win-x64/native/`
+- `LICENSE`
+- `README.md`
+- `LICENSE-THIRD-PARTY/*`
+
+It should not contain source-only `native/` files or `runtime/` placeholders.
+
+## Python
+
+The default `aikernel` Python package is CPU-only and lives with
+AIKernel.Core. GPU-specific Python or native wrappers should be provided by the
+matching external Capability repository if needed.
+
 ## Third-Party Notices
 
 LibTorch/PyTorch runtime binaries are redistributed under the BSD 3-Clause
