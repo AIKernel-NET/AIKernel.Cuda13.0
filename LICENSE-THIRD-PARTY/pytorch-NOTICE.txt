@@ -1,0 +1,13 @@
+PyTorch / LibTorch Notice
+========================
+
+AIKernel.Cuda13.0.Libtorch2.12.win-x64 redistributes LibTorch 2.12.0 CUDA runtime binaries, including
+PyTorch/LibTorch DLLs and the CUDA Runtime / cuDNN DLLs shipped in the official
+Windows LibTorch CUDA distribution.
+
+PyTorch / LibTorch is licensed under the BSD 3-Clause License. The CUDA Runtime
+and cuDNN DLLs included in the official LibTorch CUDA package are NVIDIA
+redistributable components.
+
+This notice is included to preserve third-party license and disclaimer
+information in binary redistribution packages.

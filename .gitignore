@@ -8,6 +8,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
 # Build results
+.vs/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -20,6 +21,7 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+[Bb]uild/
 [Ll]og/
 [Ll]ogs/
 
@@ -43,6 +45,7 @@ ScaffoldingReadMe.txt
 ~$*
 *~
 CodeCoverage/
+native/build/
 
 # MSBuild Binary and Structured Log
 *.binlog
