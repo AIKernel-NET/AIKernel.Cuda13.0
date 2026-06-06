@@ -1,0 +1,15 @@
+{
+  "schema": "https://aikernel.net/schemas/capability-loader.v1.json",
+  "packageId": "AIKernel.Cuda13.0.Libtorch2.12.win-x64",
+  "rid": "win-x64",
+  "nativeLibrary": "libtorch_bridge.dll",
+  "nativeAbiPath": "runtimes/win-x64/native",
+  "runtimeSearchPaths": [
+    "%AIKERNEL_LIBTORCH_PATH%/lib",
+    "%AIKERNEL_LIBTORCH_PATH%",
+    "%AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_HOME%/runtime/win-x64/libtorch/lib",
+    "%AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_HOME%/runtime/win-x64/libtorch",
+    "runtime/win-x64/libtorch/lib",
+    "runtime/win-x64/libtorch"
+  ]
+}

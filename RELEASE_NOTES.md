@@ -6,19 +6,49 @@ Initial Windows `win-x64` CUDA Capability package for AIKernel.
 
 This release uses split distribution:
 
-- NuGet.org receives a metadata package only. It includes managed AIKernel
-  dependencies for `AIKernel.Abstractions`, `AIKernel.Core`, `AIKernel.Kernel`,
-  `AIKernel.Dtos`, and `AIKernel.Enums`, but no native payload.
-- GitHub Releases receive the full runtime `.nupkg`. It includes the managed
-  Capability assembly, `libtorch_bridge.dll`, LibTorch 2.12.0 CUDA 13.0
-  runtime DLLs, CUDA redistributables, and PyTorch license notices.
+- NuGet.org receives a lightweight C# package. It includes the managed
+  Capability assembly, `libtorch_bridge.dll`, `loader.json`, and dynamic
+  runtime loading logic.
+- The NuGet package does not include LibTorch, CUDA, cuDNN, cuBLAS, or other
+  large runtime DLLs.
+- GitHub Releases receive the full runtime `.zip`. It includes LibTorch 2.12.0
+  CUDA 13.0 runtime files, CUDA redistributables, cuDNN, cuBLAS,
+  `libtorch_bridge.dll`, `loader.json`, and PyTorch license notices.
+- PyPI receives a lightweight Python wrapper package named
+  `aikernel-cuda13-libtorch2-12-win-x64`.
+- GitHub Releases receive development Python wheels named
+  `aikernel-cuda13-libtorch2-12-win-x64-dev` for CI/CD and compatibility
+  testing.
 
-Install the full runtime package by downloading the matching GitHub Release
-asset, adding its folder as a local NuGet source, and installing this package id
-with `--source` pointing at that local folder.
+Install the lightweight C# package from NuGet.org:
+
+```powershell
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5
+```
+
+For a self-contained CUDA runtime snapshot, download and extract the matching
+GitHub Release `.runtime.zip` asset. Extracting it beside the app allows the
+default `loader.json` relative paths to work; otherwise set
+`AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER`.
 
 See `docs/package-distribution.md` for the detailed split-distribution
 checklist.
+
+Install the Python wrapper package with:
+
+```bash
+pip install aikernel-cuda13-libtorch2-12-win-x64
+```
+
+Import it with:
+
+```python
+import aikernel_cuda13_libtorch2_12_win_x64
+```
+
+The Python package is distributed through pip and is not embedded in the NuGet
+package. NuGet packages are for C# consumers; pip packages are for Python
+consumers.
 
 The public C ABI remains:
 

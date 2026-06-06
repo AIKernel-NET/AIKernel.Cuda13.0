@@ -1,0 +1,117 @@
+name: publish-python
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Publish channel
+        required: true
+        default: stable
+        type: choice
+        options:
+          - stable
+          - dev
+      version:
+        description: Python package version
+        required: true
+        default: 0.0.5
+      release_tag:
+        description: GitHub Release tag for dev wheels
+        required: false
+        default: python-dev
+      libtorch_path:
+        description: Path to LibTorch 2.12.0 + CUDA 13.0 on the self-hosted Windows runner
+        required: true
+        default: runtime/win-x64/libtorch
+
+permissions:
+  contents: write
+
+jobs:
+  build-python:
+    name: Build Python wheel
+    runs-on: [self-hosted, Windows, X64, CUDA13]
+    env:
+      AIKERNEL_LIBTORCH_PATH: ${{ inputs.libtorch_path }}
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: py -m pip install --upgrade build twine pytest
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Configure native bridge
+        working-directory: ..
+        run: cmake -S native -B native/build/win-x64 -A x64
+
+      - name: Build native bridge
+        working-directory: ..
+        run: cmake --build native/build/win-x64 --config Release
+
+      - name: Build managed capability
+        working-directory: ..
+        run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release
+
+      - name: Stage lightweight binaries
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force src/aikernel_cuda13_libtorch2_12_win_x64/managed | Out-Null
+          New-Item -ItemType Directory -Force src/aikernel_cuda13_libtorch2_12_win_x64/native/win-x64 | Out-Null
+          Copy-Item ../src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/bin/Release/net10.0/AIKernel.Cuda13.0.Libtorch2.12.win-x64.dll src/aikernel_cuda13_libtorch2_12_win_x64/managed/
+          Copy-Item ../native/build/win-x64/Release/libtorch_bridge.dll src/aikernel_cuda13_libtorch2_12_win_x64/native/win-x64/
+
+      - name: Apply package channel and version
+        shell: pwsh
+        run: |
+          $pyproject = Get-Content pyproject.toml -Raw
+          $init = Get-Content src/aikernel_cuda13_libtorch2_12_win_x64/__init__.py -Raw
+          if ("${{ inputs.channel }}" -eq "dev") {
+            $pyproject = $pyproject -replace 'name = "aikernel-cuda13-libtorch2-12-win-x64"', 'name = "aikernel-cuda13-libtorch2-12-win-x64-dev"'
+            $init = $init -replace 'PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64"', 'PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64-dev"'
+          }
+          $pyproject = $pyproject -replace 'version = "[^"]+"', 'version = "${{ inputs.version }}"'
+          $init = $init -replace '__version__ = "[^"]+"', '__version__ = "${{ inputs.version }}"'
+          Set-Content pyproject.toml -Value $pyproject -NoNewline
+          Set-Content src/aikernel_cuda13_libtorch2_12_win_x64/__init__.py -Value $init -NoNewline
+
+      - name: Test Python package
+        run: py -m pytest
+
+      - name: Build wheel
+        run: py -m build --wheel
+
+      - name: Check wheel
+        run: py -m twine check dist/*
+
+      - name: Publish stable wheel to PyPI
+        if: inputs.channel == 'stable'
+        run: py -m twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Upload development wheel to GitHub Release
+        if: inputs.channel == 'dev'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          prerelease: true
+          files: python/dist/*
+          body: |
+            Development Python wheel for AIKernel CUDA Capability tooling.
+
+            Stable Python packages are published to PyPI. This GitHub Release
+            asset is intended for CI/CD and compatibility testing.

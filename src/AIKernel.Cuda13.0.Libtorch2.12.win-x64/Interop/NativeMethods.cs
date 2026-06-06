@@ -6,6 +6,13 @@ internal static class NativeMethods
 {
     internal const string LibraryName = "libtorch_bridge";
 
+    static NativeMethods()
+    {
+        NativeLibrary.SetDllImportResolver(
+            typeof(NativeMethods).Assembly,
+            (libraryName, _, _) => NativeLibraryLoader.Resolve(libraryName));
+    }
+
     [DllImport(
         LibraryName,
         EntryPoint = "load_model",

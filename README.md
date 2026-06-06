@@ -2,9 +2,8 @@
 
 Reference external AIKernel Capability module for one runtime combination:
 Windows `win-x64`, LibTorch 2.12.0, and CUDA 13.0. This repository owns the
-CUDA-specific managed invoker, native C ABI bridge, redistributable
-LibTorch/CUDA runtime binaries, and runtime metadata that were intentionally
-separated from AIKernel.Core.
+CUDA-specific managed invoker, native C ABI bridge, loader configuration, and
+runtime metadata that were intentionally separated from AIKernel.Core.
 
 AIKernel.Core is CUDA-free. Install this package only on trusted GPU hosts that
 explicitly opt in to CUDA execution.
@@ -14,37 +13,27 @@ For the full split-distribution rules, see
 
 ## Package Model
 
-This Capability has two package artifacts with the same package id and version:
+This Capability has two C# runtime artifacts and one Python wrapper artifact:
 
-- **Metadata package**: published to NuGet.org for discovery only. It contains
-  no `lib/`, `runtimes/`, or native binaries. It carries the managed AIKernel
-  dependency metadata for Core, Kernel, Abstractions, Dtos, and Enums.
-- **Full runtime package**: published as a GitHub Release asset. It includes
-  LibTorch, CUDA runtime DLLs, cuDNN redistributables, and `libtorch_bridge.dll`.
+- **Lightweight NuGet package**: published to NuGet.org for C# consumers. It
+  contains the managed assembly, `libtorch_bridge.dll`, `loader.json`, and
+  dynamic loading logic. It does not contain LibTorch, CUDA, cuDNN, cuBLAS, or
+  other large runtime DLLs.
+- **Full runtime archive**: published as a GitHub Release `.zip`. It includes
+  LibTorch CUDA, CUDA Runtime, cuDNN, cuBLAS, `libtorch_bridge.dll`, and an
+  auto-configured `loader.json`.
+- **pip package**: published to PyPI for Python consumers. It is not embedded in
+  the NuGet package.
 
-The full runtime package is too large for NuGet.org because NuGet.org limits
-packages to about 250 MB. Do not install the NuGet.org metadata package when
-you need CUDA execution. Download the matching full `.nupkg` from GitHub
-Releases and install it from a local NuGet source.
+NuGet is the C# distribution channel. pip is the Python distribution channel.
+The GitHub Release archive carries the large CUDA runtime snapshot.
 
-## Install The Full Runtime Package
+## Install The Lightweight NuGet Package
 
-Download the full package from:
-
-```text
-https://github.com/AIKernel-NET/AIKernel.Cuda13.0/releases
-```
-
-Then add the folder that contains the downloaded `.nupkg` as a local source and
-install from that source explicitly:
+For C# consumers:
 
 ```powershell
-$feed = "$HOME\.aikernel\cuda-packages"
-New-Item -ItemType Directory -Force $feed | Out-Null
-
-# Put AIKernel.Cuda13.0.Libtorch2.12.win-x64.0.0.5.nupkg in $feed first.
-dotnet nuget add source $feed --name AIKernel-CUDA
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5 --source $feed
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5
 ```
 
 The managed package exposes:
@@ -53,9 +42,33 @@ The managed package exposes:
 - `LibTorchCapabilityInvoker`
 - C ABI operations: `load_model`, `unload_model`, `forward`
 
-The full runtime package includes the Windows native bridge and redistributable
-LibTorch CUDA DLLs under `runtimes/win-x64/native/`. The public C ABI is stable.
-Do not expose LibTorch, CUDA, or C++ types across the ABI boundary.
+The NuGet package includes `loader.json`. Configure it by setting one of:
+
+- `AIKERNEL_LIBTORCH_PATH`
+- `AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_HOME`
+- `AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER`
+
+## Install The Full Runtime Archive
+
+Download the full runtime archive from:
+
+```text
+https://github.com/AIKernel-NET/AIKernel.Cuda13.0/releases
+```
+
+Extract it beside the consuming application, or set
+`AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER` to the extracted `loader.json`.
+The archive layout is designed so the default relative paths work after
+extraction:
+
+```text
+loader.json
+runtimes/win-x64/native/libtorch_bridge.dll
+runtime/win-x64/libtorch/**
+```
+
+The public C ABI is stable. Do not expose LibTorch, CUDA, or C++ types across
+the ABI boundary.
 
 ## Native Build
 
@@ -78,13 +91,12 @@ cmake -S native -B native/build/win-x64 -A x64
 cmake --build native/build/win-x64 --config Release
 ```
 
-The package project uses these defaults when packing runtime assets:
+The package project uses this default when packing the lightweight NuGet native
+bridge:
 
-- `AIKernelLibTorchRedistPath=../ref/libtorch-win-shared-with-deps-2.12.0+cu130/libtorch`
 - `AIKernelNativeBridgePath=native/build/win-x64/Release/libtorch_bridge.dll`
 
-Override these MSBuild properties if your CI extracts LibTorch or native build
-artifacts elsewhere.
+Override this MSBuild property if your CI places the native bridge elsewhere.
 
 ## Release Verification
 
@@ -96,27 +108,25 @@ dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
 cmake --build native/build/win-x64 --config Release
 ```
 
-The metadata package is produced from
-`packaging/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec.template` by the
-release workflow after replacing `$version$` with the release version. It does
-not restore managed dependencies during packing; Core/Kernel package
-availability is verified when the metadata package is pushed and consumed from
-NuGet.org.
-
-The GitHub Release full runtime `.nupkg` should contain:
+The NuGet.org lightweight `.nupkg` should contain:
 
 - `lib/net10.0/AIKernel.Cuda13.0.Libtorch2.12.win-x64.dll`
 - `runtimes/win-x64/native/libtorch_bridge.dll`
-- LibTorch / CUDA runtime DLLs under `runtimes/win-x64/native/`
+- `loader.json`
 - `LICENSE`
 - `README.md`
+
+It must not contain LibTorch, CUDA, cuDNN, cuBLAS, or other large runtime DLLs.
+
+The GitHub Release runtime `.zip` should contain:
+
+- `runtimes/win-x64/native/libtorch_bridge.dll`
+- `runtime/win-x64/libtorch/**`
+- `loader.json`
+- `LICENSE`
+- `README.md`
+- `RELEASE_NOTES.md`
 - `LICENSE-THIRD-PARTY/*`
-
-It should not contain source-only `native/` files or `runtime/` placeholders.
-
-The NuGet.org metadata `.nupkg` should contain metadata, managed AIKernel
-dependencies, `README.md`, and `LICENSE`. It must not contain `lib/`,
-`runtimes/`, or native binaries.
 
 ## Release Workflow
 
@@ -124,10 +134,10 @@ Use `.github/workflows/release.yml` for the split publication flow:
 
 1. Build and test the managed Capability.
 2. Build `libtorch_bridge.dll` with Windows MSVC.
-3. Pack the full runtime `.nupkg`.
-4. Upload the full runtime `.nupkg` to the GitHub Release assets.
-5. Pack the metadata `.nupkg` with managed AIKernel dependencies only.
-6. Push only the metadata package to NuGet.org.
+3. Pack the lightweight NuGet `.nupkg`.
+4. Push the lightweight NuGet package to NuGet.org.
+5. Build the full runtime `.zip`.
+6. Upload the full runtime `.zip` to GitHub Release assets.
 
 The full package job intentionally runs on a self-hosted Windows runner labeled
 `Windows`, `X64`, and `CUDA13`. That runner must have:
@@ -138,22 +148,45 @@ The full package job intentionally runs on a self-hosted Windows runner labeled
 - LibTorch 2.12.0 + CUDA 13.0 available at the workflow `libtorch_path`
   input, or another path passed through `AIKERNEL_LIBTORCH_PATH`
 
-The metadata package job can run on a hosted Windows runner because it contains
-no CUDA, LibTorch, native binaries, or runtime payload.
-
-The metadata package and the full package intentionally share the same package
-id and version. Runtime users should install with `--source` pointing at the
-local folder containing the downloaded full package so NuGet selects the full
-runtime package instead of the NuGet.org metadata package.
-
 See [`docs/package-distribution.md`](docs/package-distribution.md) for the
 publisher and consumer checklist.
 
-## Python
+## Python / pip
 
-The default `aikernel` Python package is CPU-only and lives with
-AIKernel.Core. GPU-specific Python or native wrappers should be provided by the
-matching external Capability repository if needed.
+Python distribution is independent from NuGet. NuGet packages are for C#
+consumers, while Python wrappers are published through pip.
+
+The Python package follows the same channel policy as AIKernel.Core:
+
+- Stable packages are published to PyPI.
+- Development packages are attached to GitHub Releases for CI/CD and
+  compatibility testing.
+
+The stable Python package for this Capability is:
+
+```bash
+pip install aikernel-cuda13-libtorch2-12-win-x64
+```
+
+Import it as:
+
+```python
+import aikernel_cuda13_libtorch2_12_win_x64 as cuda_capability
+```
+
+This Python package is intentionally lightweight. It carries the CUDA
+Capability identity, descriptor metadata, managed Capability DLL,
+`libtorch_bridge.dll`, `loader.json`, and installation guidance. It does not
+include LibTorch, CUDA runtime DLLs, cuDNN, or cuBLAS; those runtime assets
+remain in the full GitHub Release runtime archive.
+
+Development wheels use `aikernel-cuda13-libtorch2-12-win-x64-dev` and versions
+such as `0.0.5.dev1`. GitHub Packages does not provide a PyPI registry, so dev
+pip artifacts are distributed as GitHub Release assets or installed from the
+repository with `pip install git+...#subdirectory=python`.
+
+See [`docs/python-package-distribution.md`](docs/python-package-distribution.md)
+for the Python package policy.
 
 ## Third-Party Notices
 
@@ -161,12 +194,16 @@ LibTorch/PyTorch runtime binaries are redistributed under the BSD 3-Clause
 License and Additional Terms. CUDA Runtime and cuDNN DLLs included in the
 LibTorch Windows CUDA package are NVIDIA redistributables.
 
-This NuGet package includes:
+The lightweight NuGet package does not redistribute LibTorch, CUDA, cuDNN, or
+cuBLAS binaries.
+
+The GitHub Release runtime archive includes:
 
 - `LICENSE-THIRD-PARTY/pytorch-LICENSE.txt`
 - `LICENSE-THIRD-PARTY/pytorch-NOTICE.txt`
 
-Keep those files in the package whenever LibTorch CUDA binaries are included.
+Keep those files in the runtime archive whenever LibTorch CUDA binaries are
+included.
 
 ## Fork Model
 

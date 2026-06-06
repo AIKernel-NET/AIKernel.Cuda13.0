@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aikernel-cuda13-libtorch2-12-win-x64"
+version = "0.0.5"
+description = "AIKernel CUDA 13.0 LibTorch 2.12 win-x64 Capability Python wrapper package."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [
+  { name = "Takuya Sogawa" }
+]
+keywords = [
+  "aikernel",
+  "cuda",
+  "libtorch",
+  "capability",
+  "gpu",
+  "win-x64"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+  "aikernel-net>=0.0.5.1"
+]
+
+[project.urls]
+Homepage = "https://github.com/AIKernel-NET/AIKernel.Cuda13.0"
+Repository = "https://github.com/AIKernel-NET/AIKernel.Cuda13.0"
+Issues = "https://github.com/AIKernel-NET/AIKernel.Cuda13.0/issues"
+Releases = "https://github.com/AIKernel-NET/AIKernel.Cuda13.0/releases"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+aikernel_cuda13_libtorch2_12_win_x64 = [
+  "loader.json",
+  "managed/*.dll",
+  "native/win-x64/*.dll"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

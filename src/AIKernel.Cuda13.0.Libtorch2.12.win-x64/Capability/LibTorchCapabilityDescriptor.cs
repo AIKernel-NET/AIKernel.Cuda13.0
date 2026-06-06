@@ -37,7 +37,9 @@ public static class LibTorchCapabilityDescriptor
                 ["rid"] = "win-x64",
                 ["package.id"] = "AIKernel.Cuda13.0.Libtorch2.12.win-x64",
                 ["runtime.win-x64"] = "runtime/win-x64/libtorch",
-                ["runtime.env"] = "AIKERNEL_LIBTORCH_PATH"
+                ["runtime.env"] = "AIKERNEL_LIBTORCH_PATH",
+                ["loader.config"] = "loader.json",
+                ["loader.env"] = "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER"
             });
     }
 }

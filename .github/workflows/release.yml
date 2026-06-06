@@ -20,11 +20,12 @@ permissions:
   contents: write
 
 jobs:
-  build-full-package:
-    name: Build full CUDA capability package
+  publish-cuda-capability:
+    name: Publish CUDA capability
     runs-on: [self-hosted, Windows, X64, CUDA13]
     env:
       AIKERNEL_LIBTORCH_PATH: ${{ inputs.libtorch_path }}
+      PACKAGE_ID: AIKernel.Cuda13.0.Libtorch2.12.win-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,48 +44,43 @@ jobs:
       - name: Test managed capability
         run: dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
 
-      - name: Pack full runtime package
-        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.version }} -p:AIKernelLibTorchRedistPath=${{ inputs.libtorch_path }}
+      - name: Pack lightweight NuGet package
+        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.version }}
 
-      - name: Upload full runtime package to GitHub Release
+      - name: Push lightweight NuGet package
+        run: dotnet nuget push src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/bin/Release/${{ env.PACKAGE_ID }}.${{ inputs.version }}.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Build full runtime archive
+        shell: pwsh
+        run: |
+          $root = "artifacts/runtime/${{ env.PACKAGE_ID }}.${{ inputs.version }}"
+          $native = Join-Path $root "runtimes/win-x64/native"
+          $runtime = Join-Path $root "runtime/win-x64/libtorch"
+          New-Item -ItemType Directory -Force $native | Out-Null
+          New-Item -ItemType Directory -Force $runtime | Out-Null
+          Copy-Item native/build/win-x64/Release/libtorch_bridge.dll $native
+          Copy-Item src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/loader.json $root
+          Copy-Item "${{ inputs.libtorch_path }}/*" $runtime -Recurse -Force
+          Copy-Item LICENSE $root
+          Copy-Item README.md $root
+          Copy-Item RELEASE_NOTES.md $root
+          Copy-Item LICENSE-THIRD-PARTY $root -Recurse
+          Compress-Archive -Path "$root/*" -DestinationPath "artifacts/runtime/${{ env.PACKAGE_ID }}.${{ inputs.version }}.runtime.zip" -Force
+
+      - name: Upload runtime archive to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
-          files: src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/bin/Release/AIKernel.Cuda13.0.Libtorch2.12.win-x64.${{ inputs.version }}.nupkg
+          files: artifacts/runtime/${{ env.PACKAGE_ID }}.${{ inputs.version }}.runtime.zip
           body: |
-            Full AIKernel CUDA Capability package for Windows win-x64, CUDA 13.0, and LibTorch 2.12.
+            Full AIKernel CUDA runtime archive for Windows win-x64, CUDA 13.0, and LibTorch 2.12.
 
-            This asset includes LibTorch/CUDA runtime DLLs and intentionally exceeds NuGet.org size limits.
-            NuGet.org receives only the metadata package with managed AIKernel dependencies.
+            NuGet.org receives the lightweight C# package with the managed assembly,
+            libtorch_bridge.dll, loader.json, and dynamic runtime loading logic.
 
-  publish-meta-package:
-    name: Publish NuGet.org metadata package
-    runs-on: windows-latest
-    needs: build-full-package
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2
-
-      - name: Pack metadata package
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force artifacts/meta | Out-Null
-          $template = Get-Content packaging/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec.template -Raw
-          $nuspec = $template.Replace('$version$', '${{ inputs.version }}')
-          Set-Content artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec -Value $nuspec -NoNewline
-          nuget pack artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec -OutputDirectory artifacts/meta -BasePath .
-
-      - name: Push metadata package to NuGet.org
-        run: dotnet nuget push artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.${{ inputs.version }}.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+            This GitHub Release asset contains LibTorch/CUDA/cuDNN/cuBLAS runtime
+            files and an auto-configured loader.json. Extract the archive beside the
+            consuming application or point AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER
+            at the extracted loader.json.

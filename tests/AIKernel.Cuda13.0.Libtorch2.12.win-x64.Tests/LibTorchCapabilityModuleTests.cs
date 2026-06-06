@@ -25,6 +25,10 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Equal("win-x64", descriptor.Metadata["rid"]);
         Assert.Equal("AIKernel.Cuda13.0.Libtorch2.12.win-x64", descriptor.Metadata["package.id"]);
         Assert.Equal("AIKERNEL_LIBTORCH_PATH", descriptor.Metadata["runtime.env"]);
+        Assert.Equal("loader.json", descriptor.Metadata["loader.config"]);
+        Assert.Equal(
+            "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER",
+            descriptor.Metadata["loader.env"]);
     }
 
     [Fact]
