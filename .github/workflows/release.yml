@@ -1,0 +1,90 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to publish
+        required: true
+        default: 0.0.5
+      release_tag:
+        description: GitHub release tag
+        required: true
+        default: v0.0.5
+      libtorch_path:
+        description: Path to LibTorch 2.12.0 + CUDA 13.0 on the self-hosted Windows runner
+        required: true
+        default: runtime/win-x64/libtorch
+
+permissions:
+  contents: write
+
+jobs:
+  build-full-package:
+    name: Build full CUDA capability package
+    runs-on: [self-hosted, Windows, X64, CUDA13]
+    env:
+      AIKERNEL_LIBTORCH_PATH: ${{ inputs.libtorch_path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Configure native bridge
+        run: cmake -S native -B native/build/win-x64 -A x64
+
+      - name: Build native bridge
+        run: cmake --build native/build/win-x64 --config Release
+
+      - name: Test managed capability
+        run: dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
+
+      - name: Pack full runtime package
+        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.version }} -p:AIKernelLibTorchRedistPath=${{ inputs.libtorch_path }}
+
+      - name: Upload full runtime package to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/bin/Release/AIKernel.Cuda13.0.Libtorch2.12.win-x64.${{ inputs.version }}.nupkg
+          body: |
+            Full AIKernel CUDA Capability package for Windows win-x64, CUDA 13.0, and LibTorch 2.12.
+
+            This asset includes LibTorch/CUDA runtime DLLs and intentionally exceeds NuGet.org size limits.
+            NuGet.org receives only the metadata package with managed AIKernel dependencies.
+
+  publish-meta-package:
+    name: Publish NuGet.org metadata package
+    runs-on: windows-latest
+    needs: build-full-package
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Pack metadata package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/meta | Out-Null
+          $template = Get-Content packaging/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec.template -Raw
+          $nuspec = $template.Replace('$version$', '${{ inputs.version }}')
+          Set-Content artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec -Value $nuspec -NoNewline
+          nuget pack artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.nuspec -OutputDirectory artifacts/meta -BasePath .
+
+      - name: Push metadata package to NuGet.org
+        run: dotnet nuget push artifacts/meta/AIKernel.Cuda13.0.Libtorch2.12.win-x64.${{ inputs.version }}.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
