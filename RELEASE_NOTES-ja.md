@@ -13,10 +13,6 @@
   揃えました。
 - Python wrapper を `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.0` として公開します。
 
-## 0.0.5
-
-AIKernel 向けの初期 Windows `win-x64` CUDA Capability package です。
-
 この release は split distribution を採用します。
 
 - NuGet.org には lightweight C# package を公開します。managed Capability assembly、

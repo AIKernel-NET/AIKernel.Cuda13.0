@@ -15,10 +15,6 @@ First stable external CUDA Capability baseline:
 - Publish the Python wrapper as
   `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.0`.
 
-## 0.0.5
-
-Initial Windows `win-x64` CUDA Capability package for AIKernel.
-
 This release uses split distribution:
 
 - NuGet.org receives a lightweight C# package. It includes the managed
