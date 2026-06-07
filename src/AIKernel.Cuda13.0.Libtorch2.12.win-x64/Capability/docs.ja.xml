@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.CapabilityId">
+      <summary>AIKernel の公開参照サーフェスで公開される CapabilityId 値を提供します。</summary>
+    </member>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Name">
+      <summary>AIKernel の公開参照サーフェスで公開される Name 値を提供します。</summary>
+    </member>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Version">
+      <summary>AIKernel の公開参照サーフェスで公開される Version 値を提供します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Create">
+      <summary>AIKernel の公開参照サーフェスとして Create 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor">
+      <summary>AIKernel の公開参照サーフェスとして #ctor 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail">
+      <summary>AIKernel の公開参照サーフェスとして Fail 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync">
+      <summary>AIKernel の公開参照サーフェスとして InvokeAsync 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success">
+      <summary>AIKernel の公開参照サーフェスとして Success 操作を実行します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor">
+      <summary>AIKernel パッケージ利用者に公開される LibTorchCapabilityDescriptor の参照サーフェスを表します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker">
+      <summary>AIKernel パッケージ利用者に公開される LibTorchCapabilityInvoker の参照サーフェスを表します。</summary>
+    </member>
+  </members>
+</doc>

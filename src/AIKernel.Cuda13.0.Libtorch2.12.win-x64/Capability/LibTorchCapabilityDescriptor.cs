@@ -3,12 +3,22 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Capability;
 using AIKernel.Dtos.Capabilities;
 using AIKernel.Enums;
 
+/// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor']" />
+/// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor']" />
 public static class LibTorchCapabilityDescriptor
 {
+    /// <include file="docs.en.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.CapabilityId']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.CapabilityId']" />
     public const string CapabilityId = "libtorch.llama.cuda13.0.libtorch2.12.win-x64";
+    /// <include file="docs.en.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Name']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Name']" />
     public const string Name = "LibTorch Llama CUDA 13.0";
+    /// <include file="docs.en.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Version']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Version']" />
     public const string Version = "2.12.0";
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Create']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Create']" />
     public static CapabilityModuleDescriptor Create()
     {
         return new CapabilityModuleDescriptor(

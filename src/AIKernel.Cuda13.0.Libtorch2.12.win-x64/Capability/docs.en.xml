@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.CapabilityId">
+      <summary>Provides the CapabilityId value exposed by the AIKernel public reference surface.</summary>
+    </member>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Name">
+      <summary>Provides the Name value exposed by the AIKernel public reference surface.</summary>
+    </member>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Version">
+      <summary>Provides the Version value exposed by the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor.Create">
+      <summary>Executes the Create operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor">
+      <summary>Executes the #ctor operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail">
+      <summary>Executes the Fail operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync">
+      <summary>Executes the InvokeAsync operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success">
+      <summary>Executes the Success operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor">
+      <summary>Represents the LibTorchCapabilityDescriptor public reference surface for AIKernel package consumers.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker">
+      <summary>Represents the LibTorchCapabilityInvoker public reference surface for AIKernel package consumers.</summary>
+    </member>
+  </members>
+</doc>

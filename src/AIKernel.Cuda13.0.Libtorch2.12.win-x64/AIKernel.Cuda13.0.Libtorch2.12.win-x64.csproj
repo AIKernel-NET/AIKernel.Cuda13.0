@@ -30,6 +30,7 @@
     <PackageReleaseNotes>
       AIKernel.Cuda13.0.Libtorch2.12.win-x64 v0.1.0 external Capability package. Provides the managed Capability descriptor/invoker, Windows MSVC Native ABI bridge, NuGet icon, and loader.json based dynamic runtime linking. LibTorch 2.12.0 + CUDA 13.0 runtime binaries are distributed separately through GitHub Release archives. AIKernel.Core remains CUDA-free.
     </PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

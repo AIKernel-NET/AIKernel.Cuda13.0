@@ -11,16 +11,22 @@ using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 using AIKernel.Dtos.Capabilities;
 using AIKernel.Enums;
 
+/// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
+/// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
     private readonly IMemoryMapper? _memoryMapper;
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     public LibTorchCapabilityInvoker(
         IMemoryMapper? memoryMapper = null)
     {
         _memoryMapper = memoryMapper;
     }
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
     public ValueTask<CapabilityInvocationResult> InvokeAsync(
         CapabilityInvocationRequest request,
         CancellationToken cancellationToken = default)
@@ -349,11 +355,15 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         long? RegionLength,
         CapabilityInvocationResult? Result)
     {
+        /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
+        /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
         public static MappedModelPath Success(
             string path,
             long? regionLength)
             => new(true, path, regionLength, null);
 
+        /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
+        /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
         public static MappedModelPath Fail(
             CapabilityInvocationResult result)
             => new(false, null, null, result);

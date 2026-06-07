@@ -1,4 +1,9 @@
-"""AIKernel CUDA 13.0 LibTorch 2.12 win-x64 Capability metadata."""
+"""[EN]
+Reference module for aikernel_cuda13_libtorch2_12_win_x64.__init__.
+
+[JA]
+aikernel_cuda13_libtorch2_12_win_x64.__init__ の参照モジュールです。
+"""
 
 from __future__ import annotations
 
@@ -27,7 +32,12 @@ RELEASES_URL = f"{REPOSITORY_URL}/releases"
 
 @dataclass(frozen=True)
 class CapabilityPackage:
-    """Stable package identity for the external CUDA Capability."""
+    """[EN]
+    Represents the CapabilityPackage public Python API surface.
+    
+    [JA]
+    CapabilityPackage の公開 Python API サーフェスを表します。
+    """
 
     package_name: str
     dev_package_name: str
@@ -43,7 +53,16 @@ class CapabilityPackage:
 
 
 def package() -> CapabilityPackage:
-    """Return the pip package and C# NuGet runtime identity."""
+    """[EN]
+    Executes the package operation.
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    package 操作を実行します。
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     return CapabilityPackage(
         package_name=PACKAGE_NAME,
@@ -61,7 +80,16 @@ def package() -> CapabilityPackage:
 
 
 def capability_descriptor() -> dict[str, str]:
-    """Return a serializable descriptor for Python tooling."""
+    """[EN]
+    Executes the capability descriptor operation.
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    capability descriptor 操作を実行します。
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     info = package()
     return {
@@ -82,7 +110,22 @@ def capability_descriptor() -> dict[str, str]:
 
 
 def install_instructions(version: str | None = None) -> str:
-    """Return CUDA package installation instructions for C# consumers."""
+    """[EN]
+    Executes the install instructions operation.
+    Args:
+        version: Input value for install instructions.
+    
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    install instructions 操作を実行します。
+    引数:
+        version: install instructions に渡す入力値です。
+    
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     resolved_version = version or __version__
     return "\n".join(
@@ -100,7 +143,16 @@ def install_instructions(version: str | None = None) -> str:
 
 
 def bundled_managed_assemblies() -> tuple[str, ...]:
-    """Return managed DLLs bundled into the pip wheel, if present."""
+    """[EN]
+    Executes the bundled managed assemblies operation.
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    bundled managed assemblies 操作を実行します。
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     managed = files(__package__).joinpath("managed")
     if not managed.is_dir():
@@ -110,7 +162,16 @@ def bundled_managed_assemblies() -> tuple[str, ...]:
 
 
 def bundled_native_libraries() -> tuple[str, ...]:
-    """Return native bridge DLLs bundled into the pip wheel, if present."""
+    """[EN]
+    Executes the bundled native libraries operation.
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    bundled native libraries 操作を実行します。
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     native = files(__package__).joinpath("native", "win-x64")
     if not native.is_dir():

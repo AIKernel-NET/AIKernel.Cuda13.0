@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens">
+      <summary>AIKernel の公開参照サーフェスで公開される MaxInputTokens 値を提供します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate">
+      <summary>AIKernel の公開参照サーフェスとして TryCreate 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail">
+      <summary>AIKernel の公開参照サーフェスとして Fail 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success">
+      <summary>AIKernel の公開参照サーフェスとして Success 操作を実行します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest">
+      <summary>AIKernel パッケージ利用者に公開される LlamaForwardRequest の参照サーフェスを表します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult">
+      <summary>AIKernel パッケージ利用者に公開される LlamaForwardRequestParseResult の参照サーフェスを表します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardResult">
+      <summary>AIKernel パッケージ利用者に公開される LlamaForwardResult の参照サーフェスを表します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaModelConfig">
+      <summary>AIKernel パッケージ利用者に公開される LlamaModelConfig の参照サーフェスを表します。</summary>
+    </member>
+  </members>
+</doc>

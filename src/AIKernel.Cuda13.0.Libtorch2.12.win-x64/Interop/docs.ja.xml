@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.#ctor">
+      <summary>AIKernel の公開参照サーフェスとして #ctor 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ToInt32">
+      <summary>AIKernel の公開参照サーフェスとして ToInt32 操作を実行します。</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ReleaseHandle">
+      <summary>安定した C ABI を通じて native LibTorch model session handle を解放し、native bridge が利用できない場合は fail-closed で終了します。</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle">
+      <summary>AIKernel パッケージ利用者に公開される SafeLlamaModelHandle の参照サーフェスを表します。</summary>
+    </member>
+  </members>
+</doc>
