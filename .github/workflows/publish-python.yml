@@ -14,11 +14,15 @@ on:
       version:
         description: Python package version
         required: true
-        default: 0.0.5
+        default: 0.1.0
+      managed_package_version:
+        description: AIKernel managed dependency version
+        required: true
+        default: 0.1.0
       release_tag:
         description: GitHub Release tag for dev wheels
         required: false
-        default: python-dev
+        default: v0.1.0-python-dev
       libtorch_path:
         description: Path to LibTorch 2.12.0 + CUDA 13.0 on the self-hosted Windows runner
         required: true
@@ -61,9 +65,13 @@ jobs:
         working-directory: ..
         run: cmake --build native/build/win-x64 --config Release
 
+      - name: Restore managed capability
+        working-directory: ..
+        run: dotnet restore AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
+
       - name: Build managed capability
         working-directory: ..
-        run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release
+        run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.managed_package_version }} -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
 
       - name: Stage lightweight binaries
         shell: pwsh

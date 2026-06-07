@@ -6,11 +6,15 @@ on:
       version:
         description: Package version to publish
         required: true
-        default: 0.0.5
+        default: 0.1.0
+      managed_package_version:
+        description: AIKernel managed dependency version
+        required: true
+        default: 0.1.0
       release_tag:
         description: GitHub release tag
         required: true
-        default: v0.0.5
+        default: v0.1.0
       libtorch_path:
         description: Path to LibTorch 2.12.0 + CUDA 13.0 on the self-hosted Windows runner
         required: true
@@ -41,11 +45,14 @@ jobs:
       - name: Build native bridge
         run: cmake --build native/build/win-x64 --config Release
 
+      - name: Restore managed capability
+        run: dotnet restore AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
+
       - name: Test managed capability
-        run: dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
+        run: dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
 
       - name: Pack lightweight NuGet package
-        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.version }}
+        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.version }} -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
 
       - name: Push lightweight NuGet package
         run: dotnet nuget push src/AIKernel.Cuda13.0.Libtorch2.12.win-x64/bin/Release/${{ env.PACKAGE_ID }}.${{ inputs.version }}.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -118,7 +118,12 @@ See `docs/python-package-distribution.md` for details.
 
 ## Release Checklist
 
-1. Publish AIKernel managed dependencies first.
+1. Publish AIKernel.NET and AIKernel.Core managed dependencies first.
+   The CUDA release workflow's `managed_package_version` input must point to
+   the already-published managed package family. During local validation this
+   may be a cache-busting build such as `0.1.0.2`; for the public v0.1.0 release
+   it should be `0.1.0` after AIKernel.NET/Core have been repacked and
+   published with the final contract surface.
 2. Ensure the self-hosted Windows runner has CUDA Toolkit 13.0.x and LibTorch
    2.12.0 CUDA 13.0.
 3. Run the release workflow.
