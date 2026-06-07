@@ -4,6 +4,10 @@
 
 ## 0.1.0
 
+> [EN] CUDA 13.0 bindings enter the graph: deterministic tensor ops join the semantic pipeline without leaking device complexity.
+>
+> [JA] CUDA 13.0 バインディングがグラフへ参入──デバイスの複雑性を漏らさず、決定論的 Tensor 演算が意味パイプラインに合流する。
+
 最初の stable external CUDA Capability baseline です。
 
 - `PackageIcon` により NuGet package icon (`aikernel-logo128x128.png`) を追加しました。
