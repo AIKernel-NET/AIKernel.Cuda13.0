@@ -6,6 +6,10 @@ AIKernel.Cuda13.0.Libtorch2.12.win-x64 uses split distribution:
 - GitHub Releases receive a full CUDA runtime archive.
 - PyPI receives the Python wrapper package.
 
+This is part of the AIKernel 0.1.0 prototype validation release line scheduled
+for 2026-06-09. The package validates external GPU Capability distribution
+without moving CUDA, LibTorch, or native runtime payloads into AIKernel.Core.
+
 ## Artifacts
 
 | Artifact | Location | Contents | Purpose |
@@ -52,7 +56,7 @@ Users point `loader.json` at the runtime location with either:
 Install:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
 ```
 
 ## loader.json

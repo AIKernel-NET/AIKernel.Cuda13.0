@@ -2,8 +2,8 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Tests;
 
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Capability;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
-using AIKernel.Common.Results;
-using AIKernel.Core.Memory;
+using AIKernel.Abstractions.Memory;
+using AIKernel.Dtos.Memory;
 using AIKernel.Dtos.Capabilities;
 using AIKernel.Enums;
 
@@ -282,13 +282,10 @@ public sealed class LibTorchCapabilityModuleTests
 
     private sealed class FailingMemoryMapper : IMemoryMapper
     {
-        public Result<IMemoryRegion> Open(
+        public IMemoryRegion Open(
             string path,
             MemoryAccessMode accessMode = MemoryAccessMode.Read)
-            => Result<IMemoryRegion>.Fail(new ErrorContext(
-                "mapped model unavailable",
-                "MAPPED_MODEL_UNAVAILABLE",
-                false));
+            => throw new InvalidOperationException("mapped model unavailable");
     }
 
     private sealed class SuccessfulMemoryMapper(
@@ -299,18 +296,18 @@ public sealed class LibTorchCapabilityModuleTests
 
         public MemoryAccessMode? OpenedAccessMode { get; private set; }
 
-        public Result<IMemoryRegion> Open(
+        public IMemoryRegion Open(
             string path,
             MemoryAccessMode accessMode = MemoryAccessMode.Read)
         {
             OpenedPath = path;
             OpenedAccessMode = accessMode;
 
-            return Result<IMemoryRegion>.Success(new FakeMemoryRegion(
+            return new FakeMemoryRegion(
                 new MemoryRegionInfo(
                     mappedPath,
                     length,
-                    accessMode)));
+                    accessMode));
         }
     }
 
@@ -325,10 +322,10 @@ public sealed class LibTorchCapabilityModuleTests
 
         public bool IsMapped { get; private set; } = true;
 
-        public Result<bool> Unmap()
+        public bool Unmap()
         {
             IsMapped = false;
-            return Result<bool>.Success(true);
+            return true;
         }
 
         public void Dispose()

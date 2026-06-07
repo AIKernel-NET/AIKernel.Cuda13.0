@@ -1,5 +1,18 @@
 # AIKernel.Cuda13.0.Libtorch2.12.win-x64 Release Notes
 
+## 0.1.0
+
+First stable external CUDA Capability baseline:
+
+- Add the NuGet package icon (`aikernel-logo128x128.png`) through
+  `PackageIcon`.
+- Keep the package model unchanged: lightweight NuGet / lightweight pip /
+  GitHub Release runtime archive.
+- Align managed package references with the AIKernel.Core and AIKernel.NET
+  0.1.0 package family.
+- Publish the Python wrapper as
+  `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.0`.
+
 ## 0.0.5
 
 Initial Windows `win-x64` CUDA Capability package for AIKernel.
@@ -23,7 +36,7 @@ This release uses split distribution:
 Install the lightweight C# package from NuGet.org:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
 ```
 
 For a self-contained CUDA runtime snapshot, download and extract the matching

@@ -5,10 +5,11 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using AIKernel.Abstractions.Capabilities;
-using AIKernel.Core.Memory;
+using AIKernel.Abstractions.Memory;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Interop;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 using AIKernel.Dtos.Capabilities;
+using AIKernel.Enums;
 
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
@@ -260,27 +261,33 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         if (_memoryMapper is null)
             return MappedModelPath.Success(path, regionLength: null);
 
-        var mapped = _memoryMapper.Open(path, MemoryAccessMode.Read);
-        if (mapped.IsFailure)
+        IMemoryRegion region;
+        try
+        {
+            region = _memoryMapper.Open(path, MemoryAccessMode.Read);
+        }
+        catch (Exception ex)
         {
             return MappedModelPath.Fail(Fail(
                 request,
                 "LIBTORCH_MEMORY_MAP_FAILED",
-                mapped.Error!.Message));
+                ex.Message));
         }
 
-        using var region = mapped.Value!;
-        if (!region.IsMapped || region.Pointer == IntPtr.Zero)
+        using (region)
         {
-            return MappedModelPath.Fail(Fail(
-                request,
-                "LIBTORCH_MEMORY_MAP_FAILED",
-                "Memory mapper returned an unmapped model region."));
-        }
+            if (!region.IsMapped || region.Pointer == IntPtr.Zero)
+            {
+                return MappedModelPath.Fail(Fail(
+                    request,
+                    "LIBTORCH_MEMORY_MAP_FAILED",
+                    "Memory mapper returned an unmapped model region."));
+            }
 
-        return MappedModelPath.Success(
-            region.Info.Path,
-            region.Length);
+            return MappedModelPath.Success(
+                region.Info.Path,
+                region.Length);
+        }
     }
 
     private static bool IsNativeBoundaryException(
