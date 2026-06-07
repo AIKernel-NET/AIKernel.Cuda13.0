@@ -1,5 +1,7 @@
 # AIKernel.Cuda13.0.Libtorch2.12.win-x64
 
+[日本語 README](README-ja.md)
+
 Reference external AIKernel Capability module for one runtime combination:
 Windows `win-x64`, LibTorch 2.12.0, and CUDA 13.0. This repository owns the
 CUDA-specific managed invoker, native C ABI bridge, loader configuration, and

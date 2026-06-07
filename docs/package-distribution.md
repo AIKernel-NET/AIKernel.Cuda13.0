@@ -1,5 +1,7 @@
 # Package Distribution
 
+[日本語](package-distribution-ja.md)
+
 AIKernel.Cuda13.0.Libtorch2.12.win-x64 uses split distribution:
 
 - NuGet.org receives a lightweight C# package.

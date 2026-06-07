@@ -1,5 +1,7 @@
 # AIKernel.Cuda13.0.Libtorch2.12.win-x64 Release Notes
 
+[日本語](RELEASE_NOTES-ja.md)
+
 ## 0.1.0
 
 First stable external CUDA Capability baseline:

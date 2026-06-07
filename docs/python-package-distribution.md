@@ -1,5 +1,7 @@
 # Python Package Distribution
 
+[日本語](python-package-distribution-ja.md)
+
 This repository publishes a lightweight Python package for the CUDA Capability.
 Python distribution is independent from NuGet: NuGet packages are for C#
 consumers, while pip packages are for Python consumers.
