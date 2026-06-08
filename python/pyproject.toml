@@ -29,7 +29,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
 dependencies = [
-  "aikernel-net>=0.1.0"
+  "aikernel-net>=0.1.0.1"
 ]
 
 [project.urls]

@@ -2,10 +2,11 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Tests;
 
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Capability;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
-using AIKernel.Abstractions.Memory;
-using AIKernel.Dtos.Memory;
+using AIKernel.Common.Results;
+using AIKernel.Core.Memory;
 using AIKernel.Dtos.Capabilities;
 using AIKernel.Enums;
+using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 
 public sealed class LibTorchCapabilityModuleTests
 {
@@ -104,64 +105,6 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Equal("sha256:replay", result.ReplayLogHash);
         Assert.Equal("true", result.Metadata["fail_closed"]);
         Assert.Equal("libtorch_native_abi", result.Metadata["failure_origin"]);
-    }
-
-    [Fact]
-    public async Task InvokeAsync_ReturnsFailClosedWhenMemoryMapperCannotOpenModel()
-    {
-        var invoker = new LibTorchCapabilityInvoker(new FailingMemoryMapper());
-        var request = new CapabilityInvocationRequest(
-            InvocationId: "invoke-load-memory-map-failed",
-            CapabilityId: LibTorchCapabilityDescriptor.CapabilityId,
-            Operation: "load_model",
-            Arguments: new Dictionary<string, string>
-            {
-                ["path"] = "missing-model.pt"
-            },
-            InputHash: null,
-            ReplayLogHash: "sha256:replay",
-            Metadata: new Dictionary<string, string>());
-
-        var result = await invoker.InvokeAsync(
-            request,
-            TestContext.Current.CancellationToken);
-
-        Assert.False(result.Succeeded);
-        Assert.Equal("LIBTORCH_MEMORY_MAP_FAILED", result.ErrorCode);
-        Assert.Equal("sha256:replay", result.ReplayLogHash);
-        Assert.Equal("true", result.Metadata["fail_closed"]);
-        Assert.Equal("libtorch_native_abi", result.Metadata["failure_origin"]);
-    }
-
-    [Fact]
-    public async Task InvokeAsync_UsesMappedModelPathBeforeNativeLoad()
-    {
-        var mapper = new SuccessfulMemoryMapper(
-            "mapped-model.pt",
-            1234);
-        var invoker = new LibTorchCapabilityInvoker(mapper);
-        var request = new CapabilityInvocationRequest(
-            InvocationId: "invoke-load-mapped-native-missing",
-            CapabilityId: LibTorchCapabilityDescriptor.CapabilityId,
-            Operation: "load_model",
-            Arguments: new Dictionary<string, string>
-            {
-                ["path"] = "logical-model.pt"
-            },
-            InputHash: null,
-            ReplayLogHash: "sha256:replay",
-            Metadata: new Dictionary<string, string>());
-
-        var result = await invoker.InvokeAsync(
-            request,
-            TestContext.Current.CancellationToken);
-
-        Assert.Equal("logical-model.pt", mapper.OpenedPath);
-        Assert.Equal(MemoryAccessMode.Read, mapper.OpenedAccessMode);
-        Assert.False(result.Succeeded);
-        Assert.Equal("LIBTORCH_NATIVE_ABI_UNAVAILABLE", result.ErrorCode);
-        Assert.Equal("sha256:replay", result.ReplayLogHash);
-        Assert.Equal("true", result.Metadata["fail_closed"]);
     }
 
     [Fact]
@@ -284,8 +227,16 @@ public sealed class LibTorchCapabilityModuleTests
     {
         public IMemoryRegion Open(
             string path,
-            MemoryAccessMode accessMode = MemoryAccessMode.Read)
+            CoreMemoryAccessMode accessMode = CoreMemoryAccessMode.Read)
             => throw new InvalidOperationException("mapped model unavailable");
+
+        public Result<IMemoryRegion> OpenResult(
+            string path,
+            CoreMemoryAccessMode accessMode = CoreMemoryAccessMode.Read)
+            => Result<IMemoryRegion>.Fail(new ErrorContext(
+                "mapped model unavailable",
+                "TEST_MEMORY_MAP_FAILED",
+                false));
     }
 
     private sealed class SuccessfulMemoryMapper(
@@ -294,11 +245,11 @@ public sealed class LibTorchCapabilityModuleTests
     {
         public string? OpenedPath { get; private set; }
 
-        public MemoryAccessMode? OpenedAccessMode { get; private set; }
+        public CoreMemoryAccessMode? OpenedAccessMode { get; private set; }
 
         public IMemoryRegion Open(
             string path,
-            MemoryAccessMode accessMode = MemoryAccessMode.Read)
+            CoreMemoryAccessMode accessMode = CoreMemoryAccessMode.Read)
         {
             OpenedPath = path;
             OpenedAccessMode = accessMode;
@@ -309,6 +260,11 @@ public sealed class LibTorchCapabilityModuleTests
                     length,
                     accessMode));
         }
+
+        public Result<IMemoryRegion> OpenResult(
+            string path,
+            CoreMemoryAccessMode accessMode = CoreMemoryAccessMode.Read)
+            => Result<IMemoryRegion>.Success(Open(path, accessMode));
     }
 
     private sealed class FakeMemoryRegion(
@@ -332,5 +288,63 @@ public sealed class LibTorchCapabilityModuleTests
         {
             _ = Unmap();
         }
+    }
+
+    [Fact]
+    public async Task InvokeAsync_ReturnsFailClosedWhenMemoryMapperCannotOpenModel()
+    {
+        var invoker = new LibTorchCapabilityInvoker(new FailingMemoryMapper());
+        var request = new CapabilityInvocationRequest(
+            InvocationId: "invoke-load-memory-map-failed",
+            CapabilityId: LibTorchCapabilityDescriptor.CapabilityId,
+            Operation: "load_model",
+            Arguments: new Dictionary<string, string>
+            {
+                ["path"] = "missing-model.pt"
+            },
+            InputHash: null,
+            ReplayLogHash: "sha256:replay",
+            Metadata: new Dictionary<string, string>());
+
+        var result = await invoker.InvokeAsync(
+            request,
+            TestContext.Current.CancellationToken);
+
+        Assert.False(result.Succeeded);
+        Assert.Equal("LIBTORCH_MEMORY_MAP_FAILED", result.ErrorCode);
+        Assert.Equal("sha256:replay", result.ReplayLogHash);
+        Assert.Equal("true", result.Metadata["fail_closed"]);
+        Assert.Equal("libtorch_native_abi", result.Metadata["failure_origin"]);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_UsesMappedModelPathBeforeNativeLoad()
+    {
+        var mapper = new SuccessfulMemoryMapper(
+            "mapped-model.pt",
+            1234);
+        var invoker = new LibTorchCapabilityInvoker(mapper);
+        var request = new CapabilityInvocationRequest(
+            InvocationId: "invoke-load-mapped-native-missing",
+            CapabilityId: LibTorchCapabilityDescriptor.CapabilityId,
+            Operation: "load_model",
+            Arguments: new Dictionary<string, string>
+            {
+                ["path"] = "logical-model.pt"
+            },
+            InputHash: null,
+            ReplayLogHash: "sha256:replay",
+            Metadata: new Dictionary<string, string>());
+
+        var result = await invoker.InvokeAsync(
+            request,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal("logical-model.pt", mapper.OpenedPath);
+        Assert.Equal(CoreMemoryAccessMode.Read, mapper.OpenedAccessMode);
+        Assert.False(result.Succeeded);
+        Assert.Equal("LIBTORCH_NATIVE_ABI_UNAVAILABLE", result.ErrorCode);
+        Assert.Equal("sha256:replay", result.ReplayLogHash);
+        Assert.Equal("true", result.Metadata["fail_closed"]);
     }
 }

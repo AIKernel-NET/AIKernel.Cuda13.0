@@ -5,12 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <Version>0.1.0.2</Version>
-    <AssemblyVersion>0.1.0.2</AssemblyVersion>
-    <FileVersion>0.1.0.2</FileVersion>
-    <InformationalVersion>0.1.0.2</InformationalVersion>
-    <AIKernelPackageVersion>0.1.0.2</AIKernelPackageVersion>
-    <RestoreAdditionalProjectSources>$(MSBuildThisFileDirectory)..\..\..\artifacts\packages;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <InformationalVersion>0.1.0</InformationalVersion>
+    <AIKernelContractPackageVersion>0.1.0</AIKernelContractPackageVersion>
+    <AIKernelCorePackageVersion>0.1.0.1</AIKernelCorePackageVersion>
 
     <AssemblyName>AIKernel.Cuda13.0.Libtorch2.12.win-x64</AssemblyName>
     <RootNamespace>AIKernel.Cuda13.Libtorch2_12.WinX64</RootNamespace>
@@ -35,11 +35,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AIKernel.Abstractions" Version="$(AIKernelPackageVersion)" />
-    <PackageReference Include="AIKernel.Core" Version="$(AIKernelPackageVersion)" />
-    <PackageReference Include="AIKernel.Kernel" Version="$(AIKernelPackageVersion)" />
-    <PackageReference Include="AIKernel.Dtos" Version="$(AIKernelPackageVersion)" />
-    <PackageReference Include="AIKernel.Enums" Version="$(AIKernelPackageVersion)" />
+    <PackageReference Include="AIKernel.Abstractions" Version="$(AIKernelContractPackageVersion)" />
+    <PackageReference Include="AIKernel.Core" Version="$(AIKernelCorePackageVersion)" />
+    <PackageReference Include="AIKernel.Kernel" Version="$(AIKernelCorePackageVersion)" />
+    <PackageReference Include="AIKernel.Dtos" Version="$(AIKernelContractPackageVersion)" />
+    <PackageReference Include="AIKernel.Enums" Version="$(AIKernelContractPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
