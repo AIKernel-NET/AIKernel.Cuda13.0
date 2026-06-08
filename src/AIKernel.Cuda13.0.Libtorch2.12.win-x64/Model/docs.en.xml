@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens">
+      <summary>Provides the MaxInputTokens value exposed by the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate">
+      <summary>Executes the TryCreate operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail">
+      <summary>Executes the Fail operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success">
+      <summary>Executes the Success operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest">
+      <summary>Represents the LlamaForwardRequest public reference surface for AIKernel package consumers.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult">
+      <summary>Represents the LlamaForwardRequestParseResult public reference surface for AIKernel package consumers.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardResult">
+      <summary>Represents the LlamaForwardResult public reference surface for AIKernel package consumers.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaModelConfig">
+      <summary>Represents the LlamaModelConfig public reference surface for AIKernel package consumers.</summary>
+    </member>
+  </members>
+</doc>

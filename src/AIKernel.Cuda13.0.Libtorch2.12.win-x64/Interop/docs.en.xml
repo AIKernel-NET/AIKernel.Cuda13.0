@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.#ctor">
+      <summary>Executes the #ctor operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ToInt32">
+      <summary>Executes the ToInt32 operation as part of the AIKernel public reference surface.</summary>
+    </member>
+    <member name="M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ReleaseHandle">
+      <summary>Releases the native LibTorch model session handle through the stable C ABI and fails closed when the native bridge is unavailable.</summary>
+    </member>
+    <member name="T:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle">
+      <summary>Represents the SafeLlamaModelHandle public reference surface for AIKernel package consumers.</summary>
+    </member>
+  </members>
+</doc>

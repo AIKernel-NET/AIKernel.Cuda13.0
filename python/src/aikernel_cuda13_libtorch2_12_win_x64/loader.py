@@ -1,4 +1,9 @@
-"""loader.json helpers for the AIKernel CUDA Capability wrapper."""
+"""[EN]
+Reference module for aikernel_cuda13_libtorch2_12_win_x64.loader.
+
+[JA]
+aikernel_cuda13_libtorch2_12_win_x64.loader の参照モジュールです。
+"""
 
 from __future__ import annotations
 
@@ -14,7 +19,12 @@ LOADER_ENV = "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER"
 
 @dataclass(frozen=True)
 class LoaderConfig:
-    """Serializable loader.json view used by Python tooling."""
+    """[EN]
+    Represents the LoaderConfig public Python API surface.
+    
+    [JA]
+    LoaderConfig の公開 Python API サーフェスを表します。
+    """
 
     package_id: str
     rid: str
@@ -27,6 +37,22 @@ class LoaderConfig:
         self,
         base_path: str | os.PathLike[str] | None = None,
     ) -> tuple[str, ...]:
+        """[EN]
+        Executes the resolved runtime search paths operation.
+        Args:
+            base_path: Input value for resolved runtime search paths.
+        
+        Returns:
+            Result produced by the operation.
+        
+        [JA]
+        resolved runtime search paths 操作を実行します。
+        引数:
+            base_path: resolved runtime search paths に渡す入力値です。
+        
+        戻り値:
+            操作によって生成される結果です。
+        """
         root = Path(base_path) if base_path is not None else Path(self.source_path).parent
         resolved: list[str] = []
 
@@ -45,7 +71,16 @@ class LoaderConfig:
 
 
 def default_loader_json_path() -> str:
-    """Return the bundled loader.json template path."""
+    """[EN]
+    Executes the default loader json path operation.
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    default loader json path 操作を実行します。
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     return str(files(__package__).joinpath("loader.json"))
 
@@ -53,7 +88,22 @@ def default_loader_json_path() -> str:
 def load_loader_config(
     path: str | os.PathLike[str] | None = None,
 ) -> LoaderConfig:
-    """Load an explicit loader.json, env-selected loader.json, or bundled template."""
+    """[EN]
+    Executes the load loader config operation.
+    Args:
+        path: Input value for load loader config.
+    
+    Returns:
+        Result produced by the operation.
+    
+    [JA]
+    load loader config 操作を実行します。
+    引数:
+        path: load loader config に渡す入力値です。
+    
+    戻り値:
+        操作によって生成される結果です。
+    """
 
     selected = Path(
         path or os.environ.get(LOADER_ENV) or default_loader_json_path()

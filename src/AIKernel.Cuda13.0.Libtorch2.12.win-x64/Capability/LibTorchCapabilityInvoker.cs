@@ -5,21 +5,29 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using AIKernel.Abstractions.Capabilities;
-using AIKernel.Core.Memory;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Interop;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
+using AIKernel.Core.Memory;
 using AIKernel.Dtos.Capabilities;
+using AIKernel.Enums;
+using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 
+/// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
+/// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
     private readonly IMemoryMapper? _memoryMapper;
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     public LibTorchCapabilityInvoker(
         IMemoryMapper? memoryMapper = null)
     {
         _memoryMapper = memoryMapper;
     }
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
     public ValueTask<CapabilityInvocationResult> InvokeAsync(
         CapabilityInvocationRequest request,
         CancellationToken cancellationToken = default)
@@ -253,36 +261,6 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             Metadata: metadata);
     }
 
-    private MappedModelPath ResolveMappedModelPath(
-        CapabilityInvocationRequest request,
-        string path)
-    {
-        if (_memoryMapper is null)
-            return MappedModelPath.Success(path, regionLength: null);
-
-        var mapped = _memoryMapper.Open(path, MemoryAccessMode.Read);
-        if (mapped.IsFailure)
-        {
-            return MappedModelPath.Fail(Fail(
-                request,
-                "LIBTORCH_MEMORY_MAP_FAILED",
-                mapped.Error!.Message));
-        }
-
-        using var region = mapped.Value!;
-        if (!region.IsMapped || region.Pointer == IntPtr.Zero)
-        {
-            return MappedModelPath.Fail(Fail(
-                request,
-                "LIBTORCH_MEMORY_MAP_FAILED",
-                "Memory mapper returned an unmapped model region."));
-        }
-
-        return MappedModelPath.Success(
-            region.Info.Path,
-            region.Length);
-    }
-
     private static bool IsNativeBoundaryException(
         Exception exception)
     {
@@ -342,13 +320,53 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         long? RegionLength,
         CapabilityInvocationResult? Result)
     {
+        /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
+        /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
         public static MappedModelPath Success(
             string path,
             long? regionLength)
             => new(true, path, regionLength, null);
 
+        /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
+        /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
         public static MappedModelPath Fail(
             CapabilityInvocationResult result)
             => new(false, null, null, result);
+    }
+
+    private MappedModelPath ResolveMappedModelPath(
+        CapabilityInvocationRequest request,
+        string path)
+    {
+        if (_memoryMapper is null)
+            return MappedModelPath.Success(path, regionLength: null);
+
+        IMemoryRegion region;
+        try
+        {
+            region = _memoryMapper.Open(path, CoreMemoryAccessMode.Read);
+        }
+        catch (Exception ex)
+        {
+            return MappedModelPath.Fail(Fail(
+                request,
+                "LIBTORCH_MEMORY_MAP_FAILED",
+                ex.Message));
+        }
+
+        using (region)
+        {
+            if (!region.IsMapped || region.Pointer == IntPtr.Zero)
+            {
+                return MappedModelPath.Fail(Fail(
+                    request,
+                    "LIBTORCH_MEMORY_MAP_FAILED",
+                    "Memory mapper returned an unmapped model region."));
+            }
+
+            return MappedModelPath.Success(
+                region.Info.Path,
+                region.Length);
+        }
     }
 }

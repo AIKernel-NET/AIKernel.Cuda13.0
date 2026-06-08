@@ -1,10 +1,16 @@
 # Package Distribution
 
+[日本語](package-distribution-ja.md)
+
 AIKernel.Cuda13.0.Libtorch2.12.win-x64 uses split distribution:
 
 - NuGet.org receives a lightweight C# package.
 - GitHub Releases receive a full CUDA runtime archive.
 - PyPI receives the Python wrapper package.
+
+This is part of the AIKernel 0.1.0 prototype validation release line scheduled
+for 2026-06-09. The package validates external GPU Capability distribution
+without moving CUDA, LibTorch, or native runtime payloads into AIKernel.Core.
 
 ## Artifacts
 
@@ -52,7 +58,7 @@ Users point `loader.json` at the runtime location with either:
 Install:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.0.5
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
 ```
 
 ## loader.json
@@ -114,7 +120,12 @@ See `docs/python-package-distribution.md` for details.
 
 ## Release Checklist
 
-1. Publish AIKernel managed dependencies first.
+1. Publish AIKernel.NET and AIKernel.Core managed dependencies first.
+   The CUDA release workflow's `managed_package_version` input must point to
+   the already-published managed package family. During local validation this
+   may be a cache-busting build such as `0.1.0.2`; for the public v0.1.0 release
+   it should be `0.1.0` after AIKernel.NET/Core have been repacked and
+   published with the final contract surface.
 2. Ensure the self-hosted Windows runner has CUDA Toolkit 13.0.x and LibTorch
    2.12.0 CUDA 13.0.
 3. Run the release workflow.

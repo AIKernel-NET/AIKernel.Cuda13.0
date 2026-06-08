@@ -2,12 +2,18 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 
 using System.Globalization;
 
+/// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest']" />
+/// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest']" />
 public sealed record LlamaForwardRequest(
     int ModelHandle,
     int[] InputIds)
 {
+    /// <include file="docs.en.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens']" />
     public const int MaxInputTokens = 4096;
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate']" />
     public static LlamaForwardRequestParseResult TryCreate(
         IReadOnlyDictionary<string, string> arguments)
     {
@@ -68,17 +74,23 @@ public sealed record LlamaForwardRequest(
     }
 }
 
+/// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult']" />
+/// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult']" />
 public sealed record LlamaForwardRequestParseResult(
     bool Succeeded,
     LlamaForwardRequest? Value,
     string? ErrorMessage)
 {
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success']" />
     public static LlamaForwardRequestParseResult Success(
         LlamaForwardRequest value)
     {
         return new LlamaForwardRequestParseResult(true, value, null);
     }
 
+    /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail']" />
+    /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail']" />
     public static LlamaForwardRequestParseResult Fail(
         string errorMessage)
     {

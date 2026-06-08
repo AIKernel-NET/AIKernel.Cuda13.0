@@ -1,5 +1,7 @@
 # Python Package Distribution
 
+[日本語](python-package-distribution-ja.md)
+
 This repository publishes a lightweight Python package for the CUDA Capability.
 Python distribution is independent from NuGet: NuGet packages are for C#
 consumers, while pip packages are for Python consumers.
@@ -17,7 +19,7 @@ Stable Python releases are published to PyPI.
 | --- | --- |
 | Distribution | `aikernel-cuda13-libtorch2-12-win-x64` |
 | Import name | `aikernel_cuda13_libtorch2_12_win_x64` |
-| Version line | `0.0.5 -> 0.1.0 -> ...` |
+| Version line | `0.1.0 -> ...` |
 | Contents | Capability metadata, managed Capability DLL, `libtorch_bridge.dll`, bundled `loader.json`, loader helpers, and installation guidance |
 
 Install:
@@ -44,7 +46,7 @@ print(cuda_capability.bundled_native_libraries())
 
 Development Python wheels use the package identity
 `aikernel-cuda13-libtorch2-12-win-x64-dev` and version numbers such as
-`0.0.5.dev1`.
+`0.1.0.dev1`.
 
 GitHub Packages does not provide a PyPI registry. For pip users, development
 wheels are distributed as GitHub Release assets or installed directly from the
