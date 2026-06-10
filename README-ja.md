@@ -12,7 +12,7 @@ AIKernel.Core から分離されています。
 AIKernel.Core は CUDA-free です。この package は CUDA execution に明示的に opt-in
 する trusted GPU host にのみ install してください。
 
-この repository は、2026-06-09 予定の AIKernel 0.1.0 prototype validation release
+この repository は、2026-06-09 予定の AIKernel 0.1.1 release validation line
 line に参加します。Core は CUDA-free のまま、Windows `win-x64` CUDA 13.0 +
 LibTorch 2.12.0 runtime boundary をこの repository が所有する split を検証します。
 
@@ -39,7 +39,7 @@ GitHub Release archive が巨大 CUDA runtime snapshot を保持します。
 C# consumer:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
 ```
 
 NuGet package は `loader.json` を含みます。次のいずれかで設定できます。

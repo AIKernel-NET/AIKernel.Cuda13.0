@@ -7,8 +7,8 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <Description>Unit tests for the AIKernel.Cuda13.0.Libtorch2.12.win-x64 external Capability package.</Description>
-    <AIKernelContractPackageVersion>0.1.0</AIKernelContractPackageVersion>
-    <AIKernelCorePackageVersion>0.1.0.1</AIKernelCorePackageVersion>
+    <AIKernelContractPackageVersion>0.1.1</AIKernelContractPackageVersion>
+    <AIKernelCorePackageVersion>0.1.1</AIKernelCorePackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

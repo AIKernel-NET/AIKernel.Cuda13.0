@@ -10,7 +10,7 @@ runtime metadata that were intentionally separated from AIKernel.Core.
 AIKernel.Core is CUDA-free. Install this package only on trusted GPU hosts that
 explicitly opt in to CUDA execution.
 
-This repository participates in the AIKernel 0.1.0 prototype validation release
+This repository participates in the AIKernel 0.1.1 release validation line
 line scheduled for 2026-06-09. It validates the external Capability split: Core
 remains CUDA-free, while this repository owns the Windows `win-x64` CUDA 13.0 +
 LibTorch 2.12.0 runtime boundary.
@@ -40,7 +40,7 @@ The GitHub Release archive carries the large CUDA runtime snapshot.
 For C# consumers:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
 ```
 
 The managed package exposes:
@@ -189,7 +189,7 @@ include LibTorch, CUDA runtime DLLs, cuDNN, or cuBLAS; those runtime assets
 remain in the full GitHub Release runtime archive.
 
 Development wheels use `aikernel-cuda13-libtorch2-12-win-x64-dev` and versions
-such as `0.1.0.dev1`. GitHub Packages does not provide a PyPI registry, so dev
+such as `0.1.1.dev1`. GitHub Packages does not provide a PyPI registry, so dev
 pip artifacts are distributed as GitHub Release assets or installed from the
 repository with `pip install git+...#subdirectory=python`.
 

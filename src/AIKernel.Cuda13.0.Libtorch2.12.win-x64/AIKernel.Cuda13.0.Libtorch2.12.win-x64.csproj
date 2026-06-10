@@ -5,12 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <Version>0.1.0</Version>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
-    <FileVersion>0.1.0</FileVersion>
-    <InformationalVersion>0.1.0</InformationalVersion>
-    <AIKernelContractPackageVersion>0.1.0</AIKernelContractPackageVersion>
-    <AIKernelCorePackageVersion>0.1.0.1</AIKernelCorePackageVersion>
+    <Version>0.1.1</Version>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
+    <FileVersion>0.1.1.0</FileVersion>
+    <InformationalVersion>0.1.1</InformationalVersion>
+    <AIKernelContractPackageVersion>0.1.1</AIKernelContractPackageVersion>
+    <AIKernelCorePackageVersion>0.1.1</AIKernelCorePackageVersion>
 
     <AssemblyName>AIKernel.Cuda13.0.Libtorch2.12.win-x64</AssemblyName>
     <RootNamespace>AIKernel.Cuda13.Libtorch2_12.WinX64</RootNamespace>
@@ -28,7 +28,7 @@
     <PackageIcon>aikernel-logo128x128.png</PackageIcon>
     <AIKernelNativeBridgePath Condition="'$(AIKernelNativeBridgePath)' == ''">$(MSBuildThisFileDirectory)..\..\native\build\win-x64\Release\libtorch_bridge.dll</AIKernelNativeBridgePath>
     <PackageReleaseNotes>
-      AIKernel.Cuda13.0.Libtorch2.12.win-x64 v0.1.0 external Capability package. Provides the managed Capability descriptor/invoker, Windows MSVC Native ABI bridge, NuGet icon, and loader.json based dynamic runtime linking. LibTorch 2.12.0 + CUDA 13.0 runtime binaries are distributed separately through GitHub Release archives. AIKernel.Core remains CUDA-free.
+      AIKernel.Cuda13.0.Libtorch2.12.win-x64 v0.1.1 external Capability package. Provides the managed Capability descriptor/invoker, Windows MSVC Native ABI bridge, NuGet icon, and loader.json based dynamic runtime linking. LibTorch 2.12.0 + CUDA 13.0 runtime binaries are distributed separately through GitHub Release archives. AIKernel.Core remains CUDA-free.
     </PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
