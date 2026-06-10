@@ -16,7 +16,7 @@ from .loader import (
     load_loader_config,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64"
 DEV_PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64-dev"

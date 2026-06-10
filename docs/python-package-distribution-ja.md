@@ -18,7 +18,7 @@ Stable Python release は PyPI に公開します。
 | --- | --- |
 | Distribution | `aikernel-cuda13-libtorch2-12-win-x64` |
 | Import name | `aikernel_cuda13_libtorch2_12_win_x64` |
-| Version line | `0.1.0 -> ...` |
+| Version line | `0.1.1 -> ...` |
 | Contents | Capability metadata, managed Capability DLL, `libtorch_bridge.dll`, bundled `loader.json`, loader helpers, installation guidance |
 
 Install:
@@ -39,7 +39,7 @@ print(cuda_capability.install_instructions())
 ## Development Channel
 
 Development Python wheel は `aikernel-cuda13-libtorch2-12-win-x64-dev` と
-`0.1.0.dev1` のような version number を使います。
+`0.1.1.dev1` のような version number を使います。
 
 GitHub Packages は PyPI registry を提供しません。pip user 向け development wheel は
 GitHub Release asset として配布するか、repository から直接 install します。

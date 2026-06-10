@@ -10,8 +10,17 @@ runtime metadata that were intentionally separated from AIKernel.Core.
 AIKernel.Core is CUDA-free. Install this package only on trusted GPU hosts that
 explicitly opt in to CUDA execution.
 
-This repository participates in the AIKernel 0.1.0 prototype validation release
-line scheduled for 2026-06-09. It validates the external Capability split: Core
+In the AIOS SDK, AIKernel.Cuda13.0 is an optional GPU backend layer. It keeps
+Windows CUDA 13.0 and LibTorch runtime concerns outside the kernel runtime while
+letting a distribution opt in to native accelerator execution.
+
+AIKernel also provides an official AIOS distribution, codenamed
+**AIKernel.Monolith**. Monolith has begun development as the standard AIOS that
+integrates SDK layers after the 0.1.x line stabilizes; optional GPU backends
+remain explicit opt-in components.
+
+This repository participates in the AIKernel 0.1.1 release validation line
+scheduled for 2026-06-10. It validates the external Capability split: Core
 remains CUDA-free, while this repository owns the Windows `win-x64` CUDA 13.0 +
 LibTorch 2.12.0 runtime boundary.
 
@@ -35,12 +44,19 @@ This Capability has two C# runtime artifacts and one Python wrapper artifact:
 NuGet is the C# distribution channel. pip is the Python distribution channel.
 The GitHub Release archive carries the large CUDA runtime snapshot.
 
+## Safe User Path
+
+Use the lightweight NuGet or pip package first to confirm package identity,
+descriptor metadata, and loader configuration. Download the full runtime
+archive only on trusted Windows GPU hosts where CUDA 13.0 and LibTorch 2.12.0
+execution is explicitly intended.
+
 ## Install The Lightweight NuGet Package
 
 For C# consumers:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
 ```
 
 The managed package exposes:
@@ -188,10 +204,10 @@ Capability identity, descriptor metadata, managed Capability DLL,
 include LibTorch, CUDA runtime DLLs, cuDNN, or cuBLAS; those runtime assets
 remain in the full GitHub Release runtime archive.
 
-Development wheels use `aikernel-cuda13-libtorch2-12-win-x64-dev` and versions
-such as `0.1.0.dev1`. GitHub Packages does not provide a PyPI registry, so dev
-pip artifacts are distributed as GitHub Release assets or installed from the
-repository with `pip install git+...#subdirectory=python`.
+Development wheels may be used for CI/CD and compatibility testing, but
+user-facing package history is written only for public releases. Development
+changes are folded into the next public release note rather than listed as
+separate release history entries.
 
 See [`docs/python-package-distribution.md`](docs/python-package-distribution.md)
 for the Python package policy.
