@@ -2,22 +2,25 @@
 
 [日本語](RELEASE_NOTES-ja.md)
 
-## 0.1.0
+## 0.1.1
 
-> [EN] CUDA 13.0 bindings enter the graph: deterministic tensor ops join the semantic pipeline without leaking device complexity.
->
-> [JA] CUDA 13.0 バインディングがグラフへ参入──デバイスの複雑性を漏らさず、決定論的 Tensor 演算が意味パイプラインに合流する。
+**June 10th, 2026 - Validating the CUDA path.**
+**2026年6月10日--CUDA パスを検証する。**
 
-First stable external CUDA Capability baseline:
+Validating the CUDA path: the LibTorch 2.12 surface synchronizes under guarded
+Windows conditions. CUDA パスの検証--LibTorch 2.12 の面が Windows 限定のガード下で
+同期される。
+
+Public external CUDA Capability baseline for the AIKernel 0.1.1 package family:
 
 - Add the NuGet package icon (`aikernel-logo128x128.png`) through
   `PackageIcon`.
 - Keep the package model unchanged: lightweight NuGet / lightweight pip /
   GitHub Release runtime archive.
 - Align managed package references with the AIKernel.Core and AIKernel.NET
-  0.1.0 package family.
+  0.1.1 package family.
 - Publish the Python wrapper as
-  `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.0`.
+  `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.1`.
 
 This release uses split distribution:
 
@@ -31,14 +34,13 @@ This release uses split distribution:
   `libtorch_bridge.dll`, `loader.json`, and PyTorch license notices.
 - PyPI receives a lightweight Python wrapper package named
   `aikernel-cuda13-libtorch2-12-win-x64`.
-- GitHub Releases receive development Python wheels named
-  `aikernel-cuda13-libtorch2-12-win-x64-dev` for CI/CD and compatibility
-  testing.
+- Development wheel changes are folded into the next public release note rather
+  than being listed as separate package history entries.
 
 Install the lightweight C# package from NuGet.org:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
 ```
 
 For a self-contained CUDA runtime snapshot, download and extract the matching

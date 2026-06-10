@@ -9,7 +9,7 @@ AIKernel.Cuda13.0.Libtorch2.12.win-x64 uses split distribution:
 - PyPI receives the Python wrapper package.
 
 This is part of the AIKernel 0.1.1 release validation line scheduled
-for 2026-06-09. The package validates external GPU Capability distribution
+for 2026-06-10. The package validates external GPU Capability distribution
 without moving CUDA, LibTorch, or native runtime payloads into AIKernel.Core.
 
 ## Artifacts

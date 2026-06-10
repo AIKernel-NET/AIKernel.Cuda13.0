@@ -2,20 +2,23 @@
 
 [English](RELEASE_NOTES.md)
 
-## 0.1.0
+## 0.1.1
 
-> [EN] CUDA 13.0 bindings enter the graph: deterministic tensor ops join the semantic pipeline without leaking device complexity.
->
-> [JA] CUDA 13.0 バインディングがグラフへ参入──デバイスの複雑性を漏らさず、決定論的 Tensor 演算が意味パイプラインに合流する。
+**June 10th, 2026 - Validating the CUDA path.**
+**2026年6月10日--CUDA パスを検証する。**
 
-最初の stable external CUDA Capability baseline です。
+Validating the CUDA path: the LibTorch 2.12 surface synchronizes under guarded
+Windows conditions. CUDA パスの検証--LibTorch 2.12 の面が Windows 限定のガード下で
+同期される。
+
+AIKernel 0.1.1 package family 向けの public external CUDA Capability baseline です。
 
 - `PackageIcon` により NuGet package icon (`aikernel-logo128x128.png`) を追加しました。
 - Package model は維持します: lightweight NuGet / lightweight pip /
   GitHub Release runtime archive。
-- Managed package reference を AIKernel.Core / AIKernel.NET 0.1.0 package family に
+- Managed package reference を AIKernel.Core / AIKernel.NET 0.1.1 package family に
   揃えました。
-- Python wrapper を `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.0` として公開します。
+- Python wrapper を `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.1` として公開します。
 
 この release は split distribution を採用します。
 
@@ -27,13 +30,13 @@
   `loader.json`、PyTorch license notices を含みます。
 - PyPI には `aikernel-cuda13-libtorch2-12-win-x64` という lightweight Python wrapper
   package を公開します。
-- GitHub Releases には CI/CD と compatibility testing 用の
-  `aikernel-cuda13-libtorch2-12-win-x64-dev` development Python wheel を置きます。
+- 開発 wheel での変更は個別の履歴として分けず、次の公開 release note に統合して
+  記載します。
 
 Install:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.0
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
 ```
 
 Self-contained CUDA runtime snapshot が必要な場合は、matching GitHub Release の

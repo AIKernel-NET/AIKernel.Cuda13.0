@@ -8,7 +8,7 @@ AIKernel.Cuda13.0.Libtorch2.12.win-x64 は split distribution を採用します
 - GitHub Releases: full CUDA runtime archive
 - PyPI: Python wrapper package
 
-これは 2026-06-09 予定の AIKernel 0.1.1 release validation line の一部です。
+これは 2026-06-10 予定の AIKernel 0.1.1 release validation line の一部です。
 CUDA、LibTorch、native runtime payload を AIKernel.Core に移さず、外部 GPU Capability
 distribution を検証します。
 
