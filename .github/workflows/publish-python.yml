@@ -104,12 +104,13 @@ jobs:
       - name: Check wheel
         run: py -m twine check dist/*
 
-      - name: Publish stable wheel to PyPI
+      - name: Upload stable wheel artifact
         if: inputs.channel == 'stable'
-        run: py -m twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-dist-aikernel-cuda13-libtorch2-12-win-x64
+          path: python/dist/*
+          if-no-files-found: error
 
       - name: Upload development wheel to GitHub Release
         if: inputs.channel == 'dev'
@@ -123,3 +124,23 @@ jobs:
 
             Stable Python packages are published to PyPI. This GitHub Release
             asset is intended for CI/CD and compatibility testing.
+
+  publish-stable-python:
+    name: Publish stable wheel to PyPI
+    runs-on: ubuntu-latest
+    needs: build-python
+    if: inputs.channel == 'stable'
+    environment:
+      name: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download stable wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pypi-dist-aikernel-cuda13-libtorch2-12-win-x64
+          path: dist
+
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
