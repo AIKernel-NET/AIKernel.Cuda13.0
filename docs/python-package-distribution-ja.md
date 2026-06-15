@@ -6,6 +6,10 @@
 Python distribution は NuGet から独立しています。NuGet package は C# consumer 向け、
 pip package は Python consumer 向けです。
 
+この page は stable Python distribution channel を説明します。0.1.1.1 local
+development line は、Python release が明示的に予定されない限り NuGet-only です。
+0.1.1.1 validation のために新しい PyPI package を build / publish しません。
+
 Python package は NuGet package に埋め込みません。Release wheel は NuGet package と
 同じ lightweight runtime surface を持ちます。managed Capability DLL、native bridge DLL、
 `loader.json` を含みますが、CUDA runtime payload は含みません。

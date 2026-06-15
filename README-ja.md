@@ -27,6 +27,10 @@ LibTorch 2.12.0 runtime boundary をこの repository が所有する split を�
 詳細な distribution rule は [docs/package-distribution-ja.md](docs/package-distribution-ja.md)
 を参照してください。
 
+0.1.1.1 のリポジトリ横断開発方針は [docs/README-ja.md](docs/README-ja.md) と
+[AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1-ja.md)
+を参照してください。
+
 ## パッケージモデル
 
 この Capability には 2 つの C# runtime artifact と 1 つの Python wrapper artifact があります。
@@ -79,6 +83,10 @@ Public C ABI は安定境界です。LibTorch、CUDA、C++ 型を ABI 境界へ�
 
 Python distribution は NuGet から独立しています。NuGet は C# consumer 向け、
 Python wrapper は pip 経由で公開します。
+
+0.1.1.1 local development line では、Python release が明示的に予定されない限り
+新しい PyPI package を作成・公開しません。リポジトリ横断検証では
+`0.1.1.1-dev{build-number}` の local NuGet package を使用します。
 
 Stable package:
 

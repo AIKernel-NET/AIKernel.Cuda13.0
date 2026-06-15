@@ -6,6 +6,10 @@ This repository publishes a lightweight Python package for the CUDA Capability.
 Python distribution is independent from NuGet: NuGet packages are for C#
 consumers, while pip packages are for Python consumers.
 
+This page describes the stable Python distribution channel. The 0.1.1.1 local
+development line is NuGet-only unless a Python release is explicitly scheduled.
+Do not build or publish a new PyPI package for 0.1.1.1 validation.
+
 The Python package is not embedded in the NuGet package. Release wheels carry
 the same lightweight runtime surface as the NuGet package: managed Capability
 DLL, native bridge DLL, and `loader.json`. They do not carry the CUDA runtime
