@@ -27,7 +27,7 @@ runtime boundary をこの repository が所有する split を検証します�
 詳細な distribution rule は [docs/package-distribution-ja.md](docs/package-distribution-ja.md)
 を参照してください。
 
-0.1.1.1 のリポジトリ横断開発方針は [docs/README-ja.md](docs/README-ja.md) と
+0.1.2 のリポジトリ横断開発方針は [docs/README-ja.md](docs/README-ja.md) と
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1-ja.md)
 を参照してください。
 
@@ -84,7 +84,7 @@ Public C ABI は安定境界です。LibTorch、CUDA、C++ 型を ABI 境界へ�
 Python distribution は NuGet から独立しています。NuGet は C# consumer 向け、
 Python wrapper は pip 経由で公開します。
 
-0.1.1.1 local development line では、新しい PyPI package を作成・公開しません。
+0.1.2 local development line では、新しい PyPI package を作成・公開しません。
 0.1.2 publication line では、この CUDA Capability も NuGet と PyPI の同期公開準備
 パスへ戻します。
 

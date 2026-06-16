@@ -27,7 +27,7 @@ boundary.
 For the full split-distribution rules, see
 [`docs/package-distribution.md`](docs/package-distribution.md).
 
-For cross-repository 0.1.1.1 development rules, see
+For cross-repository 0.1.2 development rules, see
 [`docs/README.md`](docs/README.md) and
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
 
@@ -184,8 +184,7 @@ publisher and consumer checklist.
 Python distribution is independent from NuGet. NuGet packages are for C#
 consumers, while Python wrappers are published through pip.
 
-For the 0.1.1.1 local development line, do not create or publish a new PyPI
-package. The 0.1.2 publication line restores the synchronized NuGet and PyPI
+For the 0.1.2 local development line, publish the synchronized Python wrapper. The 0.1.2 publication line restores the synchronized NuGet and PyPI
 package preparation path for this CUDA Capability.
 
 The Python package follows the same channel policy as AIKernel.Core:

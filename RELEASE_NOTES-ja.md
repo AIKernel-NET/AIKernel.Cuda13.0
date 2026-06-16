@@ -1,93 +1,14 @@
-# AIKernel.Cuda13.0.Libtorch2.12.win-x64 リリースノート
+# AIKernel.Cuda13.0 リリースノート
 
 [English](RELEASE_NOTES.md)
 
 ## 0.1.2
 
-**June 16th, 2026 - Preparing the CUDA Capability publication line.**
-**2026年6月16日--CUDA Capability の公開ラインを準備する。**
+**2026年6月16日 - CUDA descriptor package line。**
 
-AIKernel.Cuda13.0.Libtorch2.12.win-x64 v0.1.2 は external Capability model を
-維持したまま、次の public CUDA release に向けて package 体裁を揃えます。
+AIKernel.Cuda13.0 0.1.2 は CUDA package を AIKernel 0.1.2 dependency chain に揃えます。
 
-- Lightweight NuGet package identity を `0.1.2` に更新します。
-- Managed AIKernel package dependency を、現在の validation train で選択した
-  `0.1.1.1` contract / core library package line に揃えます。
-- AIKernel.Core は CUDA-free のまま維持します。
-- LibTorch、CUDA、cuDNN、cuBLAS、その他巨大 runtime asset は lightweight NuGet
-  package に含めません。
-- 0.1.2 正典シリーズ向けに NuGet + PyPI の同期公開パスを準備します。
-
-Install:
-
-```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.2
-```
-
-Public C ABI:
-
-- `load_model`
-- `unload_model`
-- `forward`
-
-## 0.1.1
-
-**June 10th, 2026 - Validating the CUDA path.**
-**2026年6月10日--CUDA パスを検証する。**
-
-Validating the CUDA path: the LibTorch 2.12 surface synchronizes under guarded
-Windows conditions. CUDA パスの検証--LibTorch 2.12 の面が Windows 限定のガード下で
-同期される。
-
-AIKernel 0.1.1 package family 向けの public external CUDA Capability baseline です。
-
-- `PackageIcon` により NuGet package icon (`aikernel-logo128x128.png`) を追加しました。
-- Package model は維持します: lightweight NuGet / lightweight pip /
-  GitHub Release runtime archive。
-- Managed package reference を AIKernel.Core / AIKernel.NET 0.1.1 package family に
-  揃えました。
-- Python wrapper を `aikernel-cuda13-libtorch2-12-win-x64` version `0.1.1` として公開します。
-
-この release は split distribution を採用します。
-
-- NuGet.org には lightweight C# package を公開します。managed Capability assembly、
-  `libtorch_bridge.dll`、`loader.json`、dynamic runtime loading logic を含みます。
-- NuGet package は LibTorch、CUDA、cuDNN、cuBLAS、その他巨大 runtime DLL を含みません。
-- GitHub Releases には full runtime `.zip` を置きます。LibTorch 2.12.0 CUDA 13.0
-  runtime files、CUDA redistributables、cuDNN、cuBLAS、`libtorch_bridge.dll`、
-  `loader.json`、PyTorch license notices を含みます。
-- PyPI には `aikernel-cuda13-libtorch2-12-win-x64` という lightweight Python wrapper
-  package を公開します。
-- 開発 wheel での変更は個別の履歴として分けず、次の公開 release note に統合して
-  記載します。
-
-Install:
-
-```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
-```
-
-Self-contained CUDA runtime snapshot が必要な場合は、matching GitHub Release の
-`.runtime.zip` asset を download / extract してください。
-
-Python wrapper:
-
-```bash
-pip install aikernel-cuda13-libtorch2-12-win-x64
-```
-
-```python
-import aikernel_cuda13_libtorch2_12_win_x64
-```
-
-Python package は pip で配布し、NuGet package には含めません。NuGet は C# consumer
-向け、pip は Python consumer 向けです。
-
-Public C ABI:
-
-- `load_model`
-- `unload_model`
-- `forward`
-
-AIKernel.Core は CUDA-free のままです。この repository は Windows `win-x64`、
-CUDA 13.0、LibTorch 2.12.0 専用の external Capability snapshot です。
+- CUDA 13 / LibTorch 2.12 package として `AIKernel.Cuda13.0.Libtorch2.12.win-x64` を公開します。
+- managed AIKernel dependency を AIKernel.NET / AIKernel.Core 0.1.2 に揃えます。
+- CUDA runtime concern は Providers、Control、Core の package surface から隔離します。
+- Python publishing task が開始された場合、同期 Python wrapper を 0.1.2 release flow で公開します。
