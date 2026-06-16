@@ -1,5 +1,6 @@
 namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 
+/// <summary>[EN] Documents this public package API member. [JA] LlamaModelConfig を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaModelConfig']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaModelConfig']" />
 public sealed record LlamaModelConfig(

@@ -1,6 +1,10 @@
 name: publish-python
 
 on:
+  push:
+    tags:
+      - "v*"
+      - "py-aikernel-cuda13-libtorch2-12-win-x64-*"
   workflow_dispatch:
     inputs:
       channel:
@@ -35,14 +39,56 @@ jobs:
   build-python:
     name: Build Python wheel
     runs-on: [self-hosted, Windows, X64, CUDA13]
-    env:
-      AIKERNEL_LIBTORCH_PATH: ${{ inputs.libtorch_path }}
+    outputs:
+      channel: ${{ steps.meta.outputs.channel }}
     defaults:
       run:
         working-directory: python
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Resolve publish metadata
+        id: meta
+        shell: pwsh
+        run: |
+          $channel = "${{ github.event.inputs.channel }}"
+          if ([string]::IsNullOrWhiteSpace($channel)) {
+            $channel = "stable"
+          }
+
+          $version = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $tag = "${{ github.ref_name }}"
+            if ($tag.StartsWith("v")) {
+              $version = $tag.Substring(1)
+            } elseif ($tag -match "(\d+\.\d+\.\d+(?:[A-Za-z0-9.\-]*)?)$") {
+              $version = $Matches[1]
+            } else {
+              throw "Unable to resolve Python package version from tag '$tag'."
+            }
+          }
+
+          $managedPackageVersion = "${{ github.event.inputs.managed_package_version }}"
+          if ([string]::IsNullOrWhiteSpace($managedPackageVersion)) {
+            $managedPackageVersion = $version
+          }
+
+          $releaseTag = "${{ github.event.inputs.release_tag }}"
+          if ([string]::IsNullOrWhiteSpace($releaseTag)) {
+            $releaseTag = "${{ github.ref_name }}"
+          }
+
+          $libtorchPath = "${{ github.event.inputs.libtorch_path }}"
+          if ([string]::IsNullOrWhiteSpace($libtorchPath)) {
+            $libtorchPath = "runtime/win-x64/libtorch"
+          }
+
+          "channel=$channel" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "managed_package_version=$managedPackageVersion" >> $env:GITHUB_OUTPUT
+          "release_tag=$releaseTag" >> $env:GITHUB_OUTPUT
+          "libtorch_path=$libtorchPath" >> $env:GITHUB_OUTPUT
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -59,19 +105,23 @@ jobs:
 
       - name: Configure native bridge
         working-directory: ..
+        env:
+          AIKERNEL_LIBTORCH_PATH: ${{ steps.meta.outputs.libtorch_path }}
         run: cmake -S native -B native/build/win-x64 -A x64
 
       - name: Build native bridge
         working-directory: ..
+        env:
+          AIKERNEL_LIBTORCH_PATH: ${{ steps.meta.outputs.libtorch_path }}
         run: cmake --build native/build/win-x64 --config Release
 
       - name: Restore managed capability
         working-directory: ..
-        run: dotnet restore AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
+        run: dotnet restore AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -p:AIKernelPackageVersion=${{ steps.meta.outputs.managed_package_version }}
 
       - name: Build managed capability
         working-directory: ..
-        run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ inputs.managed_package_version }} -p:AIKernelPackageVersion=${{ inputs.managed_package_version }}
+        run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore -p:Version=${{ steps.meta.outputs.managed_package_version }} -p:AIKernelPackageVersion=${{ steps.meta.outputs.managed_package_version }}
 
       - name: Stage lightweight binaries
         shell: pwsh
@@ -86,12 +136,12 @@ jobs:
         run: |
           $pyproject = Get-Content pyproject.toml -Raw
           $init = Get-Content src/aikernel_cuda13_libtorch2_12_win_x64/__init__.py -Raw
-          if ("${{ inputs.channel }}" -eq "dev") {
+          if ("${{ steps.meta.outputs.channel }}" -eq "dev") {
             $pyproject = $pyproject -replace 'name = "aikernel-cuda13-libtorch2-12-win-x64"', 'name = "aikernel-cuda13-libtorch2-12-win-x64-dev"'
             $init = $init -replace 'PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64"', 'PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64-dev"'
           }
-          $pyproject = $pyproject -replace 'version = "[^"]+"', 'version = "${{ inputs.version }}"'
-          $init = $init -replace '__version__ = "[^"]+"', '__version__ = "${{ inputs.version }}"'
+          $pyproject = $pyproject -replace 'version = "[^"]+"', 'version = "${{ steps.meta.outputs.version }}"'
+          $init = $init -replace '__version__ = "[^"]+"', '__version__ = "${{ steps.meta.outputs.version }}"'
           Set-Content pyproject.toml -Value $pyproject -NoNewline
           Set-Content src/aikernel_cuda13_libtorch2_12_win_x64/__init__.py -Value $init -NoNewline
 
@@ -105,7 +155,7 @@ jobs:
         run: py -m twine check dist/*
 
       - name: Upload stable wheel artifact
-        if: inputs.channel == 'stable'
+        if: steps.meta.outputs.channel == 'stable'
         uses: actions/upload-artifact@v4
         with:
           name: pypi-dist-aikernel-cuda13-libtorch2-12-win-x64
@@ -113,10 +163,10 @@ jobs:
           if-no-files-found: error
 
       - name: Upload development wheel to GitHub Release
-        if: inputs.channel == 'dev'
+        if: steps.meta.outputs.channel == 'dev'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.release_tag }}
+          tag_name: ${{ steps.meta.outputs.release_tag }}
           prerelease: true
           files: python/dist/*
           body: |
@@ -129,7 +179,7 @@ jobs:
     name: Publish stable wheel to PyPI
     runs-on: ubuntu-latest
     needs: build-python
-    if: inputs.channel == 'stable'
+    if: needs.build-python.outputs.channel == 'stable'
     environment:
       name: pypi
     permissions:

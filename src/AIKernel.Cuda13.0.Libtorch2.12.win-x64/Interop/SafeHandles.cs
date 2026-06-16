@@ -2,10 +2,12 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Interop;
 
 using Microsoft.Win32.SafeHandles;
 
+/// <summary>[EN] Documents this public package API member. [JA] SafeLlamaModelHandle を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle']" />
 public sealed class SafeLlamaModelHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
+    /// <summary>[EN] Documents this public package API member. [JA] SafeLlamaModelHandle を実行します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.#ctor']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.#ctor']" />
     public SafeLlamaModelHandle()
@@ -20,6 +22,7 @@ public sealed class SafeLlamaModelHandle : SafeHandleZeroOrMinusOneIsInvalid
         SetHandle(new IntPtr(nativeHandle));
     }
 
+    /// <summary>[EN] Documents this public package API member. [JA] ModelHandle を実行します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ToInt32']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Interop.SafeLlamaModelHandle.ToInt32']" />
     public int ModelHandle => handle.ToInt32();

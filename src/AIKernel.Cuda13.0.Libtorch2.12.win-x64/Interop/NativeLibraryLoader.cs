@@ -211,11 +211,23 @@ internal static class NativeLibraryLoader
 
     private sealed class LoaderConfigDto
     {
+        /// <summary>
+        /// EN: Gets NativeLibrary.
+        /// [EN] Documents this public package API member. [JA] NativeLibrary を取得します。
+        /// </summary>
         [JsonPropertyName("nativeLibrary")]
         public string? NativeLibrary { get; set; }
+        /// <summary>
+        /// EN: Gets NativeAbiPath.
+        /// [EN] Documents this public package API member. [JA] NativeAbiPath を取得します。
+        /// </summary>
 
         [JsonPropertyName("nativeAbiPath")]
         public string? NativeAbiPath { get; set; }
+        /// <summary>
+        /// EN: Gets RuntimeSearchPaths.
+        /// [EN] Documents this public package API member. [JA] RuntimeSearchPaths を取得します。
+        /// </summary>
 
         [JsonPropertyName("runtimeSearchPaths")]
         public IReadOnlyList<string>? RuntimeSearchPaths { get; set; }

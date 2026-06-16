@@ -29,6 +29,10 @@ snapshot は full GitHub Release runtime archive として配布します。
 installation guidance を発見するために使います。NuGet は C# consumer 専用であり、
 Python wrapper は NuGet package に埋め込みません。
 
+v0.1.2 package では generated managed API catalog も公開します。
+`managed_api_catalog()`、`managed_api_summary()`、`managed_type_names()`、
+`find_managed_type(full_name)` で確認できます。
+
 Bundled `loader.json` template と loader helper を含みます。
 
 ```python

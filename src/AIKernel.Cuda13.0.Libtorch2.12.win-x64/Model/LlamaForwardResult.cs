@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Interop;
 
+/// <summary>[EN] Documents this public package API member. [JA] LlamaForwardResult を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardResult']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardResult']" />
 public sealed record LlamaForwardResult(

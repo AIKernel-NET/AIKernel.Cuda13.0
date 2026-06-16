@@ -9,6 +9,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from importlib.resources import files
+from .api_catalog import (
+    ManagedMemberDescriptor,
+    ManagedTypeDescriptor,
+    find_managed_type,
+    managed_api_catalog,
+    managed_api_summary,
+    managed_type_names,
+)
 from .loader import (
     LOADER_ENV,
     LoaderConfig,
@@ -16,7 +24,7 @@ from .loader import (
     load_loader_config,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64"
 DEV_PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64-dev"
@@ -181,6 +189,12 @@ def bundled_native_libraries() -> tuple[str, ...]:
 
 
 __all__ = [
+    "ManagedMemberDescriptor",
+    "ManagedTypeDescriptor",
+    "find_managed_type",
+    "managed_api_catalog",
+    "managed_api_summary",
+    "managed_type_names",
     "CUDA_VERSION",
     "DEV_PACKAGE_NAME",
     "IMPORT_NAME",

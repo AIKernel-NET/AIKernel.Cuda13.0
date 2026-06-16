@@ -20,9 +20,9 @@ AIKernel には、公式 AIOS ディストリビューションである **AIKer
 Monolith は 0.1.x 系の安定化後に SDK layer を統合する標準 AIOS として
 開発が開始されています。optional GPU backend は引き続き明示的な opt-in component です。
 
-この repository は、2026-06-10 予定の AIKernel 0.1.1 release validation line
-に参加します。Core は CUDA-free のまま、Windows `win-x64` CUDA 13.0 +
-LibTorch 2.12.0 runtime boundary をこの repository が所有する split を検証します。
+この repository は AIKernel 0.1.2 publication preparation line に参加します。
+Core は CUDA-free のまま、Windows `win-x64` CUDA 13.0 + LibTorch 2.12.0
+runtime boundary をこの repository が所有する split を検証します。
 
 詳細な distribution rule は [docs/package-distribution-ja.md](docs/package-distribution-ja.md)
 を参照してください。
@@ -57,7 +57,7 @@ LibTorch 2.12.0 の実行を明示的に意図した trusted Windows GPU host �
 C# consumer:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.2
 ```
 
 NuGet package は `loader.json` を含みます。次のいずれかで設定できます。
@@ -84,9 +84,9 @@ Public C ABI は安定境界です。LibTorch、CUDA、C++ 型を ABI 境界へ�
 Python distribution は NuGet から独立しています。NuGet は C# consumer 向け、
 Python wrapper は pip 経由で公開します。
 
-0.1.1.1 local development line では、Python release が明示的に予定されない限り
-新しい PyPI package を作成・公開しません。リポジトリ横断検証では
-`0.1.1.1-dev{build-number}` の local NuGet package を使用します。
+0.1.1.1 local development line では、新しい PyPI package を作成・公開しません。
+0.1.2 publication line では、この CUDA Capability も NuGet と PyPI の同期公開準備
+パスへ戻します。
 
 Stable package:
 

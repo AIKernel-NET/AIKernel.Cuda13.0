@@ -8,10 +8,15 @@ CUDA-specific native execution を Core と generic Providers substrate の外�
 
 ## リポジトリ横断整合
 
-共有の repository boundary、0.1.1.1 local NuGet versioning、この更新ラインでの
-NuGet-only / no-PyPI rule は
+共有の repository boundary、v0.1.2 development versioning、依存関係順、
+PyPI Trusted Publishing、Python wrapper scope は
+[Package Release Alignment v0.1.2](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/package-release-alignment-v0.1.2-ja.md)
+で定義します。履歴としての v0.1.1.1 validation rule は
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1-ja.md)
-で定義します。
+に残します。
+複数 repository をまたぐ変更を行う場合は、まず
+[リポジトリ横断開発者ガイド v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/cross-repository-developer-guide-v0.1.1.1-ja.md)
+を読んでください。
 
 AIKernel.Cuda13.0 は明示 opt-in の CUDA runtime package を所有します。Core runtime
 policy、generic provider routing、非 CUDA backend、cross-platform provider abstraction は
@@ -24,10 +29,9 @@ policy、generic provider routing、非 CUDA backend、cross-platform provider a
 
 ## Release Scope
 
-stable 0.1.1 documentation は公開済み Python channel を説明する場合があります。
-0.1.1.1 local development line では、Python release が明示的に予定されない限り
-NuGet package のみを作成・消費します。
+Version 0.1.2 は現在の canonical integration line です。local NuGet package reference
+には `0.1.2-dev{build-number}`、local Python wheel validation には
+`0.1.2.dev{build-number}` を使います。
 
-cross-repository validation では local NuGet package reference に
-`0.1.1.1-dev{build-number}` を使います。
-
+stable package artifact は依存関係順に後で作成します。publication task が明示的に要求する
+まで、stable `0.1.2` package は作成しません。

@@ -2,6 +2,34 @@
 
 [English](RELEASE_NOTES.md)
 
+## 0.1.2
+
+**June 16th, 2026 - Preparing the CUDA Capability publication line.**
+**2026年6月16日--CUDA Capability の公開ラインを準備する。**
+
+AIKernel.Cuda13.0.Libtorch2.12.win-x64 v0.1.2 は external Capability model を
+維持したまま、次の public CUDA release に向けて package 体裁を揃えます。
+
+- Lightweight NuGet package identity を `0.1.2` に更新します。
+- Managed AIKernel package dependency を、現在の validation train で選択した
+  `0.1.1.1` contract / core library package line に揃えます。
+- AIKernel.Core は CUDA-free のまま維持します。
+- LibTorch、CUDA、cuDNN、cuBLAS、その他巨大 runtime asset は lightweight NuGet
+  package に含めません。
+- 0.1.2 正典シリーズ向けに NuGet + PyPI の同期公開パスを準備します。
+
+Install:
+
+```powershell
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.2
+```
+
+Public C ABI:
+
+- `load_model`
+- `unload_model`
+- `forward`
+
 ## 0.1.1
 
 **June 10th, 2026 - Validating the CUDA path.**

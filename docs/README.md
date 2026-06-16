@@ -9,9 +9,13 @@ the generic Providers substrate.
 
 ## Cross-Repository Alignment
 
-Shared repository boundaries, 0.1.1.1 local NuGet versioning, and the
-NuGet-only / no-PyPI rule for this update line are defined by
+Shared repository boundaries, v0.1.2 development versioning, dependency order,
+PyPI Trusted Publishing, and Python wrapper scope are defined by
+[Package Release Alignment v0.1.2](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/package-release-alignment-v0.1.2.md).
+The historical v0.1.1.1 validation rules remain available in
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
+When a change crosses repositories, start with the
+[Cross-Repository Developer Guide v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/cross-repository-developer-guide-v0.1.1.1.md).
 
 AIKernel.Cuda13.0 owns an explicit opt-in CUDA runtime package. It must not own
 Core runtime policy, generic provider routing, non-CUDA backends, or
@@ -24,10 +28,9 @@ cross-platform provider abstractions.
 
 ## Release Scope
 
-The stable 0.1.1 documentation may describe the published Python channel. For
-the 0.1.1.1 local development line, create and consume NuGet packages only
-unless a Python release is explicitly scheduled.
+Version 0.1.2 is the current canonical integration line. Use
+`0.1.2-dev{build-number}` for local NuGet package references and
+`0.1.2.dev{build-number}` for local Python wheel validation.
 
-Use `0.1.1.1-dev{build-number}` for local NuGet package references during
-cross-repository validation.
-
+Stable package artifacts are created later in dependency order. Do not create
+stable `0.1.2` packages until the publication task explicitly requests them.

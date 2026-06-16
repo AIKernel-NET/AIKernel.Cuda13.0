@@ -30,6 +30,10 @@ Use this package to discover the Capability identity, supported runtime, and
 installation guidance from Python tooling. NuGet is reserved for C# consumers;
 Python wrappers are not embedded in NuGet packages.
 
+The v0.1.2 package also exposes the generated managed API catalog through
+`managed_api_catalog()`, `managed_api_summary()`, `managed_type_names()`, and
+`find_managed_type(full_name)`.
+
 The package includes a bundled `loader.json` template and loader helpers:
 
 ```python
