@@ -76,3 +76,16 @@ The PyPI package does include a `loader.json` template so Python tooling can
 inspect and generate matching loader configuration. Release wheels also include
 the managed Capability DLL and native bridge DLL. They do not include LibTorch,
 CUDA, cuDNN, or cuBLAS runtime binaries.
+## Trusted Publisher Configuration
+
+The PyPI Trusted Publisher for the aikernel-cuda13-libtorch2-12-win-x64 project must match the GitHub OIDC claims emitted by this repository:
+
+| Field | Value |
+| --- | --- |
+| PyPI project | aikernel-cuda13-libtorch2-12-win-x64 |
+| Owner | AIKernel-NET |
+| Repository | AIKernel.Cuda13.0 |
+| Workflow | publish-python.yml |
+| Environment | pypi |
+
+If PyPI reports `invalid-publisher`, do not change the workflow to token credentials. Fix the PyPI project Trusted Publisher entry so it matches the table above, then rerun the failed publish job.

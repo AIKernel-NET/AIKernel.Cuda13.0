@@ -192,5 +192,15 @@ jobs:
           name: pypi-dist-aikernel-cuda13-libtorch2-12-win-x64
           path: dist
 
+      - name: Show trusted publisher claims
+        run: |
+          echo "PyPI project: aikernel-cuda13-libtorch2-12-win-x64"
+          echo "Expected owner: AIKernel-NET"
+          echo "Expected repository: AIKernel.Cuda13.0"
+          echo "Expected workflow: publish-python.yml"
+          echo "Expected environment: pypi"
+          echo "Actual repository: ${GITHUB_REPOSITORY}"
+          echo "Actual workflow ref: ${GITHUB_WORKFLOW_REF}"
+          echo "Actual ref: ${GITHUB_REF}"
       - name: Publish distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

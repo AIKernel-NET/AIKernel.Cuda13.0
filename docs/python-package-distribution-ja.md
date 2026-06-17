@@ -64,3 +64,16 @@ Python consumer は pip を使います。
 PyPI package は `loader.json` template を含みます。release wheel は managed Capability
 DLL と native bridge DLL も含みますが、LibTorch、CUDA、cuDNN、cuBLAS runtime binary は
 含みません。
+## Trusted Publisher 設定
+
+aikernel-cuda13-libtorch2-12-win-x64 project の PyPI Trusted Publisher は、この repository が発行する GitHub OIDC claims と一致している必要があります。
+
+| Field | Value |
+| --- | --- |
+| PyPI project | aikernel-cuda13-libtorch2-12-win-x64 |
+| Owner | AIKernel-NET |
+| Repository | AIKernel.Cuda13.0 |
+| Workflow | publish-python.yml |
+| Environment | pypi |
+
+PyPI が `invalid-publisher` を返す場合、workflow を token credential 方式へ戻してはいけません。PyPI project 側の Trusted Publisher entry を上記の値に合わせて修正し、失敗した publish job を rerun します。
