@@ -12,12 +12,14 @@ using AIKernel.Dtos.Capabilities;
 using AIKernel.Enums;
 using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 
+/// <summary>[EN] Documents this public package API member. [JA] LibTorchCapabilityInvoker を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
     private readonly IMemoryMapper? _memoryMapper;
 
+    /// <summary>[EN] Documents this public package API member. [JA] LibTorchCapabilityInvoker を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     public LibTorchCapabilityInvoker(
@@ -26,6 +28,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         _memoryMapper = memoryMapper;
     }
 
+    /// <summary>[EN] Documents this public package API member. [JA] InvokeAsync を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.InvokeAsync']" />
     public ValueTask<CapabilityInvocationResult> InvokeAsync(
@@ -320,6 +323,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         long? RegionLength,
         CapabilityInvocationResult? Result)
     {
+        /// <summary>[EN] Documents this public package API member. [JA] Success を取得します。</summary>
         /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
         /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Success']" />
         public static MappedModelPath Success(
@@ -327,6 +331,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             long? regionLength)
             => new(true, path, regionLength, null);
 
+        /// <summary>[EN] Documents this public package API member. [JA] Fail を取得します。</summary>
         /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
         /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.Fail']" />
         public static MappedModelPath Fail(

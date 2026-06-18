@@ -6,6 +6,10 @@
 Python distribution は NuGet から独立しています。NuGet package は C# consumer 向け、
 pip package は Python consumer 向けです。
 
+この page は v0.1.2 正典シリーズの stable Python distribution channel を説明します。
+integration 中は `0.1.2.dev{buildNumber}` のような development wheel を使い、
+publication task が明示的に要求するまで stable `0.1.2` package は作成しません。
+
 Python package は NuGet package に埋め込みません。Release wheel は NuGet package と
 同じ lightweight runtime surface を持ちます。managed Capability DLL、native bridge DLL、
 `loader.json` を含みますが、CUDA runtime payload は含みません。
@@ -18,7 +22,7 @@ Stable Python release は PyPI に公開します。
 | --- | --- |
 | Distribution | `aikernel-cuda13-libtorch2-12-win-x64` |
 | Import name | `aikernel_cuda13_libtorch2_12_win_x64` |
-| Version line | `0.1.1 -> ...` |
+| Version line | `0.1.2 -> ...` |
 | Contents | Capability metadata, managed Capability DLL, `libtorch_bridge.dll`, bundled `loader.json`, loader helpers, installation guidance |
 
 Install:
@@ -38,11 +42,9 @@ print(cuda_capability.install_instructions())
 
 ## Development Channel
 
-Development Python wheel は `aikernel-cuda13-libtorch2-12-win-x64-dev` と
-`0.1.1.dev1` のような version number を使います。
-
-GitHub Packages は PyPI registry を提供しません。pip user 向け development wheel は
-GitHub Release asset として配布するか、repository から直接 install します。
+Development Python wheel は `0.1.2.dev1` のような version number を使います。pip user
+向け development wheel は local artifact、GitHub Release asset、または repository
+から直接 install します。
 
 ```bash
 pip install git+https://github.com/AIKernel-NET/AIKernel.Cuda13.0.git#subdirectory=python
@@ -62,3 +64,16 @@ Python consumer は pip を使います。
 PyPI package は `loader.json` template を含みます。release wheel は managed Capability
 DLL と native bridge DLL も含みますが、LibTorch、CUDA、cuDNN、cuBLAS runtime binary は
 含みません。
+## Trusted Publisher 設定
+
+aikernel-cuda13-libtorch2-12-win-x64 project の PyPI Trusted Publisher は、この repository が発行する GitHub OIDC claims と一致している必要があります。
+
+| Field | Value |
+| --- | --- |
+| PyPI project | aikernel-cuda13-libtorch2-12-win-x64 |
+| Owner | AIKernel-NET |
+| Repository | AIKernel.Cuda13.0 |
+| Workflow | publish-python.yml |
+| Environment | pypi |
+
+PyPI が `invalid-publisher` を返す場合、workflow を token credential 方式へ戻してはいけません。PyPI project 側の Trusted Publisher entry を上記の値に合わせて修正し、失敗した publish job を rerun します。

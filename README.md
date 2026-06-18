@@ -19,13 +19,17 @@ AIKernel also provides an official AIOS distribution, codenamed
 integrates SDK layers after the 0.1.x line stabilizes; optional GPU backends
 remain explicit opt-in components.
 
-This repository participates in the AIKernel 0.1.1 release validation line
-scheduled for 2026-06-10. It validates the external Capability split: Core
-remains CUDA-free, while this repository owns the Windows `win-x64` CUDA 13.0 +
-LibTorch 2.12.0 runtime boundary.
+This repository participates in the AIKernel 0.1.2 publication preparation
+line. It validates the external Capability split: Core remains CUDA-free, while
+this repository owns the Windows `win-x64` CUDA 13.0 + LibTorch 2.12.0 runtime
+boundary.
 
 For the full split-distribution rules, see
 [`docs/package-distribution.md`](docs/package-distribution.md).
+
+For cross-repository 0.1.2 development rules, see
+[`docs/README.md`](docs/README.md) and
+[AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
 
 ## Package Model
 
@@ -56,7 +60,7 @@ execution is explicitly intended.
 For C# consumers:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.1
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.2
 ```
 
 The managed package exposes:
@@ -179,6 +183,9 @@ publisher and consumer checklist.
 
 Python distribution is independent from NuGet. NuGet packages are for C#
 consumers, while Python wrappers are published through pip.
+
+For the 0.1.2 local development line, publish the synchronized Python wrapper. The 0.1.2 publication line restores the synchronized NuGet and PyPI
+package preparation path for this CUDA Capability.
 
 The Python package follows the same channel policy as AIKernel.Core:
 

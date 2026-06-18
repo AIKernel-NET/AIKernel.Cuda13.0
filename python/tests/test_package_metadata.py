@@ -41,3 +41,12 @@ def test_bundled_loader_json_matches_capability_identity():
 def test_optional_bundled_binary_lists_are_null_safe():
     assert isinstance(cuda_capability.bundled_managed_assemblies(), tuple)
     assert isinstance(cuda_capability.bundled_native_libraries(), tuple)
+
+
+def test_managed_api_catalog_covers_cuda_capability_surface():
+    names = set(cuda_capability.managed_type_names())
+    summary = cuda_capability.managed_api_summary()
+
+    assert "AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityDescriptor" in names
+    assert "AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest" in names
+    assert summary["AIKernel.Cuda13.0.Libtorch2.12.win-x64"] > 0

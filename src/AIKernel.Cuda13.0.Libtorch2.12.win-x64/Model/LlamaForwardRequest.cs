@@ -2,16 +2,19 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 
 using System.Globalization;
 
+/// <summary>[EN] Documents this public package API member. [JA] LlamaForwardRequest を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest']" />
 public sealed record LlamaForwardRequest(
     int ModelHandle,
     int[] InputIds)
 {
+    /// <summary>[EN] Documents this public package API member. [JA] MaxInputTokens 定数を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='F:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.MaxInputTokens']" />
     public const int MaxInputTokens = 4096;
 
+    /// <summary>[EN] Documents this public package API member. [JA] TryCreate を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequest.TryCreate']" />
     public static LlamaForwardRequestParseResult TryCreate(
@@ -74,6 +77,7 @@ public sealed record LlamaForwardRequest(
     }
 }
 
+/// <summary>[EN] Documents this public package API member. [JA] LlamaForwardRequestParseResult を表します。</summary>
 /// <include file="docs.en.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult']" />
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult']" />
 public sealed record LlamaForwardRequestParseResult(
@@ -81,6 +85,7 @@ public sealed record LlamaForwardRequestParseResult(
     LlamaForwardRequest? Value,
     string? ErrorMessage)
 {
+    /// <summary>[EN] Documents this public package API member. [JA] Success を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Success']" />
     public static LlamaForwardRequestParseResult Success(
@@ -89,6 +94,7 @@ public sealed record LlamaForwardRequestParseResult(
         return new LlamaForwardRequestParseResult(true, value, null);
     }
 
+    /// <summary>[EN] Documents this public package API member. [JA] Fail を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Model.LlamaForwardRequestParseResult.Fail']" />
     public static LlamaForwardRequestParseResult Fail(
