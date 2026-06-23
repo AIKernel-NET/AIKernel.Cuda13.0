@@ -6,10 +6,10 @@ This repository publishes a lightweight Python package for the CUDA Capability.
 Python distribution is independent from NuGet: NuGet packages are for C#
 consumers, while pip packages are for Python consumers.
 
-This page describes the stable Python distribution channel for the v0.1.2
-canonical series. During integration, use development wheels such as
-`0.1.2.dev{buildNumber}` and do not create stable `0.1.2` packages until the
-publication task explicitly requests them.
+This page describes the stable Python distribution channel for the v0.1.3
+canonical GPU integration series. During integration, use development wheels
+such as `0.1.3.dev{buildNumber}` and do not create stable `0.1.3` packages
+until the publication task explicitly requests them.
 
 The Python package is not embedded in the NuGet package. Release wheels carry
 the same lightweight runtime surface as the NuGet package: managed Capability
@@ -24,7 +24,7 @@ Stable Python releases are published to PyPI.
 | --- | --- |
 | Distribution | `aikernel-cuda13-libtorch2-12-win-x64` |
 | Import name | `aikernel_cuda13_libtorch2_12_win_x64` |
-| Version line | `0.1.2 -> ...` |
+| Version line | `0.1.3 -> ...` |
 | Contents | Capability metadata, managed Capability DLL, `libtorch_bridge.dll`, bundled `loader.json`, loader helpers, and installation guidance |
 
 Install:
@@ -45,11 +45,12 @@ config = cuda_capability.load_loader_config()
 print(config.resolved_runtime_search_paths())
 print(cuda_capability.bundled_managed_assemblies())
 print(cuda_capability.bundled_native_libraries())
+print(cuda_capability.native_verification_commands())
 ```
 
 ## Development Channel
 
-Development Python wheels use version numbers such as `0.1.2.dev1`. For pip
+Development Python wheels use version numbers such as `0.1.3.dev1`. For pip
 users, development wheels are distributed as local artifacts, GitHub Release
 assets, or installed directly from the repository:
 
@@ -76,6 +77,21 @@ The PyPI package does include a `loader.json` template so Python tooling can
 inspect and generate matching loader configuration. Release wheels also include
 the managed Capability DLL and native bridge DLL. They do not include LibTorch,
 CUDA, cuDNN, or cuBLAS runtime binaries.
+
+## Native Verification Boundary
+
+The Python wrapper exposes `native_verification_commands()` for tooling that
+needs to print the canonical rev3 package and library verification commands.
+The commands intentionally stay external to Python execution:
+
+- package mode validates packaged loader/runtime entries without loading
+  LibTorch or CUDA.
+- library mode loads `aikernel_cuda13_dispatch` and verifies the staged
+  fail-closed dispatch ABI.
+
+This keeps Python distribution lightweight while still giving release tooling a
+stable path to the same `aik gpu verify-native` checks used by NuGet and native
+bridge validation.
 ## Trusted Publisher Configuration
 
 The PyPI Trusted Publisher for the aikernel-cuda13-libtorch2-12-win-x64 project must match the GitHub OIDC claims emitted by this repository:

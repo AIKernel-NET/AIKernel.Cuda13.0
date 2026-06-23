@@ -42,4 +42,16 @@ internal static class NativeMethods
         int[] inputIds,
         int length,
         out ForwardResultNative result);
+
+    [DllImport(
+        LibraryName,
+        EntryPoint = "aikernel_cuda13_dispatch",
+        CallingConvention = CallingConvention.Cdecl,
+        ExactSpelling = true)]
+    [return: MarshalAs(UnmanagedType.U4)]
+    internal static extern uint Dispatch(
+        IntPtr request,
+        uint requestLength,
+        IntPtr response,
+        uint responseLength);
 }

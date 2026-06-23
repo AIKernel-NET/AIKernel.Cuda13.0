@@ -8,9 +8,9 @@ CUDA-specific native execution を Core と generic Providers substrate の外�
 
 ## リポジトリ横断整合
 
-共有の repository boundary、v0.1.2 development versioning、依存関係順、
+共有の repository boundary、v0.1.3 development versioning、依存関係順、
 PyPI Trusted Publishing、Python wrapper scope は
-[Package Release Alignment v0.1.2](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/package-release-alignment-v0.1.2-ja.md)
+[AIKernel GPU rev3 Migration v0.1.3](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/migration/v0.1.3-gpu-rev3-migration.md)
 で定義します。履歴としての v0.1.1.1 validation rule は
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1-ja.md)
 に残します。
@@ -29,9 +29,9 @@ policy、generic provider routing、非 CUDA backend、cross-platform provider a
 
 ## Release Scope
 
-Version 0.1.2 は現在の canonical integration line です。local NuGet package reference
-には `0.1.2-dev{build-number}`、local Python wheel validation には
-`0.1.2.dev{build-number}` を使います。
+Version 0.1.3 は現在の canonical integration line です。local NuGet package reference
+には `0.1.3-dev{build-number}`、local Python wheel validation には
+`0.1.3.dev{build-number}` を使います。
 
 stable package artifact は依存関係順に後で作成します。publication task が明示的に要求する
-まで、stable `0.1.2` package は作成しません。
+まで、stable `0.1.3` package は作成しません。

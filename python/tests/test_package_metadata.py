@@ -24,6 +24,18 @@ def test_install_instructions_point_to_github_release_nuget_runtime():
     assert "dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64" in instructions
     assert "runtime zip" in instructions
     assert "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER" in instructions
+    assert "aik gpu verify-native --provider cuda13 --package <provider.nupkg>" in instructions
+    assert "aik gpu verify-native --provider cuda13 --library native/build/win-x64/Release/libtorch_bridge.dll" in instructions
+
+
+def test_native_verification_commands_cover_package_and_library_modes():
+    package_command, library_command = cuda_capability.native_verification_commands(
+        "capability.nupkg",
+        "native/libtorch_bridge.dll",
+    )
+
+    assert package_command == "aik gpu verify-native --provider cuda13 --package capability.nupkg"
+    assert library_command == "aik gpu verify-native --provider cuda13 --library native/libtorch_bridge.dll"
 
 
 def test_bundled_loader_json_matches_capability_identity():

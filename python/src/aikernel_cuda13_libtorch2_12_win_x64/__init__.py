@@ -24,7 +24,7 @@ from .loader import (
     load_loader_config,
 )
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64"
 DEV_PACKAGE_NAME = "aikernel-cuda13-libtorch2-12-win-x64-dev"
@@ -146,7 +146,28 @@ def install_instructions(version: str | None = None) -> str:
             "",
             "If the archive is not extracted beside the application, set:",
             "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_LOADER=<path-to-loader.json>",
+            "",
+            "Validate package/runtime boundaries with:",
+            "aik gpu verify-native --provider cuda13 --package <provider.nupkg>",
+            "aik gpu verify-native --provider cuda13 --library native/build/win-x64/Release/libtorch_bridge.dll",
         ]
+    )
+
+
+def native_verification_commands(
+    package_path: str = "<provider.nupkg>",
+    library_path: str = "native/build/win-x64/Release/libtorch_bridge.dll",
+) -> tuple[str, str]:
+    """[EN]
+    Returns the canonical rev3 native verification commands for this package.
+
+    [JA]
+    この package 用の canonical rev3 native verification command を返します。
+    """
+
+    return (
+        f"aik gpu verify-native --provider cuda13 --package {package_path}",
+        f"aik gpu verify-native --provider cuda13 --library {library_path}",
     )
 
 
@@ -214,5 +235,6 @@ __all__ = [
     "default_loader_json_path",
     "install_instructions",
     "load_loader_config",
+    "native_verification_commands",
     "package",
 ]

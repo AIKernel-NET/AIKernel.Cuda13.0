@@ -9,6 +9,7 @@ using AIKernel.Cuda13.Libtorch2_12.WinX64.Interop;
 using AIKernel.Cuda13.Libtorch2_12.WinX64.Model;
 using AIKernel.Core.Memory;
 using AIKernel.Dtos.Capabilities;
+using AIKernel.Dtos.Gpu;
 using AIKernel.Enums;
 using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 
@@ -18,14 +19,17 @@ using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
     private readonly IMemoryMapper? _memoryMapper;
+    private readonly LibTorchNativeAbiOptions _nativeAbiOptions;
 
     /// <summary>[EN] Documents this public package API member. [JA] LibTorchCapabilityInvoker を取得します。</summary>
     /// <include file="docs.en.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     /// <include file="docs.ja.xml" path="doc/members/member[@name='M:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker.#ctor']" />
     public LibTorchCapabilityInvoker(
-        IMemoryMapper? memoryMapper = null)
+        IMemoryMapper? memoryMapper = null,
+        LibTorchNativeAbiOptions? nativeAbiOptions = null)
     {
         _memoryMapper = memoryMapper;
+        _nativeAbiOptions = nativeAbiOptions ?? new LibTorchNativeAbiOptions();
     }
 
     /// <summary>[EN] Documents this public package API member. [JA] InvokeAsync を取得します。</summary>
@@ -51,6 +55,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 
         return request.Operation switch
         {
+            GpuOperationNames.ComputeDispatch => Forward(request, cancellationToken),
             "load_model" => LoadModel(request, cancellationToken),
             "unload_model" => UnloadModel(request, cancellationToken),
             "forward" => Forward(request, cancellationToken),
@@ -114,7 +119,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             metadata));
     }
 
-    private static ValueTask<CapabilityInvocationResult> UnloadModel(
+    private ValueTask<CapabilityInvocationResult> UnloadModel(
         CapabilityInvocationRequest request,
         CancellationToken cancellationToken)
     {
@@ -156,7 +161,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             metadata));
     }
 
-    private static ValueTask<CapabilityInvocationResult> Forward(
+    private ValueTask<CapabilityInvocationResult> Forward(
         CapabilityInvocationRequest request,
         CancellationToken cancellationToken)
     {
@@ -224,7 +229,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             Metadata: metadata);
     }
 
-    private static CapabilityInvocationResult Fail(
+    private CapabilityInvocationResult Fail(
         CapabilityInvocationRequest request,
         string errorCode,
         string errorMessage)
@@ -244,7 +249,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             Metadata: metadata);
     }
 
-    private static CapabilityInvocationResult NativeBoundaryFail(
+    private CapabilityInvocationResult NativeBoundaryFail(
         CapabilityInvocationRequest request,
         Exception exception)
     {
@@ -295,19 +300,70 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         return false;
     }
 
-    private static Dictionary<string, string> CreateMetadata(
+    private Dictionary<string, string> CreateMetadata(
         CapabilityInvocationRequest request)
     {
-        var metadata = new Dictionary<string, string>(
-            request.Metadata,
-            StringComparer.Ordinal)
+        var metadata = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        foreach (var pair in request.Metadata)
         {
-            ["capability"] = LibTorchCapabilityDescriptor.CapabilityId,
-            ["native_library"] = NativeMethods.LibraryName,
-            ["operation"] = request.Operation
+            metadata[pair.Key] = pair.Value;
+        }
+
+        foreach (var pair in LibTorchCapabilityDescriptor.Create().Metadata)
+        {
+            metadata[pair.Key] = pair.Value;
+        }
+
+        metadata["capability"] = LibTorchCapabilityDescriptor.CapabilityId;
+        metadata["native_library"] = NativeMethods.LibraryName;
+        metadata["operation"] = request.Operation;
+
+        var nativeStatus = LibTorchNativeAbiProbe.Probe(_nativeAbiOptions);
+        foreach (var pair in nativeStatus.Metadata)
+        {
+            metadata[pair.Key] = pair.Value;
+        }
+
+        AddNativeDispatchMetadata(metadata, request.Operation, nativeStatus);
+
+        return new Dictionary<string, string>(metadata, StringComparer.Ordinal);
+    }
+
+    private static void AddNativeDispatchMetadata(
+        SortedDictionary<string, string> metadata,
+        string operation,
+        LibTorchNativeAbiStatus nativeStatus)
+    {
+        var failureReason = ResolveDispatchFailureReason(operation, nativeStatus);
+        var response = new Cuda13NativeDispatchResponse
+        {
+            AbiVersion = Cuda13NativeDispatchRequest.CurrentAbiVersion,
+            HeaderSize = Cuda13NativeDispatchRequest.ResponseHeaderByteSize,
+            Status = Cuda13NativeDispatchStatus.NotInitialized,
+            FailureReason = failureReason
         };
 
-        return metadata;
+        foreach (var pair in response.ToMetadata())
+        {
+            metadata[pair.Key] = pair.Value;
+        }
+    }
+
+    private static Cuda13NativeDispatchFailureReason ResolveDispatchFailureReason(
+        string operation,
+        LibTorchNativeAbiStatus nativeStatus)
+    {
+        if (!Cuda13NativeDispatchRequestBuilder.TryMapOperation(operation, out _))
+        {
+            return Cuda13NativeDispatchFailureReason.UnknownPass;
+        }
+
+        if (!nativeStatus.BridgeAvailable || !nativeStatus.RuntimeAvailable)
+        {
+            return Cuda13NativeDispatchFailureReason.DeviceUnavailable;
+        }
+
+        return Cuda13NativeDispatchFailureReason.CommandSubmissionDisabled;
     }
 
     private static string Hash(

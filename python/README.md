@@ -30,7 +30,7 @@ Use this package to discover the Capability identity, supported runtime, and
 installation guidance from Python tooling. NuGet is reserved for C# consumers;
 Python wrappers are not embedded in NuGet packages.
 
-The v0.1.2 package also exposes the generated managed API catalog through
+The v0.1.3 package also exposes the generated managed API catalog through
 `managed_api_catalog()`, `managed_api_summary()`, `managed_type_names()`, and
 `find_managed_type(full_name)`.
 
@@ -52,6 +52,18 @@ Release wheels expose bundled paths when those binaries are present:
 print(cuda_capability.bundled_managed_assemblies())
 print(cuda_capability.bundled_native_libraries())
 ```
+
+For canonical rev3 GPU integration checks, the Python wrapper can also expose
+the matching native verification commands:
+
+```python
+for command in cuda_capability.native_verification_commands():
+    print(command)
+```
+
+Package mode validates the lightweight wrapper/runtime entries without loading
+LibTorch or CUDA. Library mode loads `aikernel_cuda13_dispatch` and verifies
+the staged fail-closed dispatch ABI.
 
 Development wheels are published as GitHub Release assets, not to PyPI. PyPI is
 reserved for stable releases.

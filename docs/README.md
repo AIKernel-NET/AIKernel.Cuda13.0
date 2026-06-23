@@ -9,9 +9,9 @@ the generic Providers substrate.
 
 ## Cross-Repository Alignment
 
-Shared repository boundaries, v0.1.2 development versioning, dependency order,
+Shared repository boundaries, v0.1.3 development versioning, dependency order,
 PyPI Trusted Publishing, and Python wrapper scope are defined by
-[Package Release Alignment v0.1.2](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/package-release-alignment-v0.1.2.md).
+[AIKernel GPU rev3 Migration v0.1.3](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/migration/v0.1.3-gpu-rev3-migration.md).
 The historical v0.1.1.1 validation rules remain available in
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
 When a change crosses repositories, start with the
@@ -28,9 +28,9 @@ cross-platform provider abstractions.
 
 ## Release Scope
 
-Version 0.1.2 is the current canonical integration line. Use
-`0.1.2-dev{build-number}` for local NuGet package references and
-`0.1.2.dev{build-number}` for local Python wheel validation.
+Version 0.1.3 is the current canonical integration line. Use
+`0.1.3-dev{build-number}` for local NuGet package references and
+`0.1.3.dev{build-number}` for local Python wheel validation.
 
 Stable package artifacts are created later in dependency order. Do not create
-stable `0.1.2` packages until the publication task explicitly requests them.
+stable `0.1.3` packages until the publication task explicitly requests them.

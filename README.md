@@ -19,7 +19,7 @@ AIKernel also provides an official AIOS distribution, codenamed
 integrates SDK layers after the 0.1.x line stabilizes; optional GPU backends
 remain explicit opt-in components.
 
-This repository participates in the AIKernel 0.1.2 publication preparation
+This repository participates in the AIKernel 0.1.3 publication preparation
 line. It validates the external Capability split: Core remains CUDA-free, while
 this repository owns the Windows `win-x64` CUDA 13.0 + LibTorch 2.12.0 runtime
 boundary.
@@ -27,7 +27,7 @@ boundary.
 For the full split-distribution rules, see
 [`docs/package-distribution.md`](docs/package-distribution.md).
 
-For cross-repository 0.1.2 development rules, see
+For cross-repository 0.1.3 development rules, see
 [`docs/README.md`](docs/README.md) and
 [AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
 
@@ -60,7 +60,7 @@ execution is explicitly intended.
 For C# consumers:
 
 ```powershell
-dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.2
+dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.3
 ```
 
 The managed package exposes:
@@ -68,6 +68,7 @@ The managed package exposes:
 - `LibTorchCapabilityDescriptor.Create()`
 - `LibTorchCapabilityInvoker`
 - C ABI operations: `load_model`, `unload_model`, `forward`
+- staged rev3 native dispatch probe: `aikernel_cuda13_dispatch`
 
 The NuGet package includes `loader.json`. Configure it by setting one of:
 
@@ -97,6 +98,15 @@ runtime/win-x64/libtorch/**
 The public C ABI is stable. Do not expose LibTorch, CUDA, or C++ types across
 the ABI boundary.
 
+The rev3 native dispatch entrypoint is intentionally fail-closed in this line.
+It accepts the canonical 40-byte request header, preserves frame index and
+sample ticks, and reports deterministic failure reasons such as
+`InvalidRequestLength`, `UnknownPass`, `DeviceUnavailable`, and
+`CommandSubmissionDisabled`. Real CUDA queue/device-buffer submission remains
+disabled until the native fixture coverage includes missing-runtime,
+invalid-header, unknown-operation, CPU-fallback, device-lost, and
+command-submission-disabled paths.
+
 ## Native Build
 
 Windows/MSVC `win-x64` is the only supported native build target in this
@@ -108,10 +118,16 @@ Place LibTorch 2.12.0 + CUDA 13.0 under one of:
 - `runtime/win-x64/libtorch`
 - `ref/libtorch-win-shared-with-deps-2.12.0+cu130/libtorch` in the parent
   workspace
+- `D:\AIKernel\runtime\win-x64\libtorch` or
+  `D:\AIKernel\ref\libtorch-win-shared-with-deps-2.12.0+cu130\libtorch`
+  for the staged D-drive development environment
 - `AIKERNEL_LIBTORCH_PATH`
 
 `native/CMakeLists.txt` also reads `../ref/env.txt` from the parent workspace
 for `CUDA_PATH` when present.
+The native verification script also probes `CUDA_PATH_V13_0`, `CUDA_PATH`,
+`%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v13.0`, and
+`D:\AIKernel\runtime\cuda\v13.0` when `-CudaRuntimePath` is not supplied.
 
 ```powershell
 cmake -S native -B native/build/win-x64 -A x64
@@ -124,6 +140,47 @@ bridge:
 - `AIKernelNativeBridgePath=native/build/win-x64/Release/libtorch_bridge.dll`
 
 Override this MSBuild property if your CI places the native bridge elsewhere.
+
+After rebuilding the native bridge, validate the package shape and the staged
+dispatch ABI:
+
+```powershell
+.\scripts\verify-native-package.ps1
+.\scripts\verify-native-library.ps1 -LibTorchPath <libtorch-root> -CudaRuntimePath <cuda-runtime-root>
+```
+
+`verify-native-library.ps1` can also run without explicit paths. In that mode it
+prints `dependency-probe` lines for the LibTorch/CUDA candidates it considered,
+prepends any resolved `bin` / `lib` folders to `PATH`, and then executes the
+native ABI smoke.
+Strict verification fails before loading the native bridge when LibTorch or
+CUDA 13 cannot be resolved. Use `-AllowLoadFailure` only for diagnostics-only
+lanes that intentionally verify the missing-dependent-module boundary.
+
+Release lanes should fail if the packaged DLL is older than the native bridge
+sources:
+
+```powershell
+.\scripts\verify-native-package.ps1 -RequireFreshNativeBridge
+```
+
+The explicit library check should print:
+
+```text
+cuda-dispatch-response: abi=1 status=NotInitialized failure=CommandSubmissionDisabled frame=1 ticks=100 diagnostics=0
+cuda-dispatch-invalid-length: failure=InvalidRequestLength
+```
+
+If the runtime dependency set has not been staged yet, the library verification
+script can be used in diagnostics-only mode:
+
+```powershell
+.\scripts\verify-native-library.ps1 -AllowLoadFailure
+```
+
+This accepts the expected Windows loader `0x8007007E` dependent-module failure
+while still verifying that the CLI reports the missing LibTorch/CUDA runtime
+boundary clearly.
 
 ## Release Verification
 
@@ -184,7 +241,7 @@ publisher and consumer checklist.
 Python distribution is independent from NuGet. NuGet packages are for C#
 consumers, while Python wrappers are published through pip.
 
-For the 0.1.2 local development line, publish the synchronized Python wrapper. The 0.1.2 publication line restores the synchronized NuGet and PyPI
+For the 0.1.3 local development line, publish the synchronized Python wrapper. The 0.1.3 publication line restores the synchronized NuGet and PyPI
 package preparation path for this CUDA Capability.
 
 The Python package follows the same channel policy as AIKernel.Core:
