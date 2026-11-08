@@ -3,8 +3,8 @@ namespace AIKernel.Cuda13.Libtorch2_12.WinX64.Capability;
 using AIKernel.Dtos.Gpu;
 
 /// <summary>
-/// [EN] Maps canonical rev3 operation ids and frame tokens into the staged Cuda13 native dispatch ABI.
-/// [JA] canonical rev3 operation id と frame token を staged Cuda13 native dispatch ABI に写像します。
+/// [EN] Maps canonical operation ids and frame tokens into the staged Cuda13 native dispatch ABI.
+/// [JA] canonical operation id と frame token を staged Cuda13 native dispatch ABI に写像します。
 /// </summary>
 public static class Cuda13NativeDispatchRequestBuilder
 {

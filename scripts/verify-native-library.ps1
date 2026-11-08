@@ -36,7 +36,7 @@ if ([string]::IsNullOrWhiteSpace($LocalFeed)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($NuGetConfigPath)) {
-    $NuGetConfigPath = Join-Path $workspaceRoot "artifacts\NuGet.rev3-local.v0.1.3-dev$LocalPackageBuildNumber.config"
+    $NuGetConfigPath = Join-Path $workspaceRoot "artifacts\NuGet.canonical-local.v0.1.3-dev$LocalPackageBuildNumber.config"
 }
 
 function Resolve-FirstExistingPath {
@@ -152,9 +152,9 @@ if (-not (Test-Path -LiteralPath $LocalFeed)) {
 }
 
 if (-not (Test-Path -LiteralPath $NuGetConfigPath)) {
-    $configScript = Join-Path $ToolsRepoRoot "scripts\new-rev3-local-nuget-config.ps1"
+    $configScript = Join-Path $ToolsRepoRoot "scripts\new-canonical-local-nuget-config.ps1"
     if (-not (Test-Path -LiteralPath $configScript)) {
-        throw "rev3 local NuGet config was not found and generator script is missing: $NuGetConfigPath"
+        throw "canonical local NuGet config was not found and generator script is missing: $NuGetConfigPath"
     }
 
     & $configScript `
@@ -162,7 +162,7 @@ if (-not (Test-Path -LiteralPath $NuGetConfigPath)) {
         -WorkspaceRoot $workspaceRoot `
         -OutputPath $NuGetConfigPath
     if ($LASTEXITCODE -ne 0) {
-        throw "Failed to generate rev3 local NuGet config: $NuGetConfigPath"
+        throw "Failed to generate canonical local NuGet config: $NuGetConfigPath"
     }
 }
 

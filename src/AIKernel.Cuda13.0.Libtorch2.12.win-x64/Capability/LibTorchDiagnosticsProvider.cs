@@ -33,10 +33,10 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
     private GpuFrameDiagnostics CreateFrameDiagnostics(GpuFrameToken? frame)
         => new()
         {
-            GamePath = CreateDiagnosticsPath(GpuRev3PathRoles.Game, frame),
-            BonsaiPath = CreateDiagnosticsPath(GpuRev3PathRoles.Bonsai, frame),
-            HudPath = CreateDiagnosticsPath(GpuRev3PathRoles.Hud, frame),
-            SensorPath = CreateDiagnosticsPath(GpuRev3PathRoles.Sensor, frame)
+            GamePath = CreateDiagnosticsPath(GpuPathRoles.Game, frame),
+            BonsaiPath = CreateDiagnosticsPath(GpuPathRoles.Bonsai, frame),
+            HudPath = CreateDiagnosticsPath(GpuPathRoles.Hud, frame),
+            SensorPath = CreateDiagnosticsPath(GpuPathRoles.Sensor, frame)
         };
 
     private GpuDiagnosticsPathInfo CreateDiagnosticsPath(
@@ -55,25 +55,25 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
             metadata[pair.Key] = pair.Value;
         }
 
-        metadata[GpuDiagnosticsMetadataKeys.Rev3AuthoritativeReady] = "false";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3CandidateStreak] = "0";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3DiagnosticReady] = "true";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3DiagnosticStreak] = "1";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3ExecutionMode] = GpuRev3ExecutionModes.NativeCudaAbiProbe;
-        metadata[GpuDiagnosticsMetadataKeys.Rev3FeatureMaskStorageTexture] = "false";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3FrameIndex] =
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalAuthoritativeReady] = "false";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalCandidateStreak] = "0";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalDiagnosticReady] = "true";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalDiagnosticStreak] = "1";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalExecutionMode] = GpuExecutionModes.NativeCudaAbiProbe;
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalFeatureMaskStorageTexture] = "false";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalFrameIndex] =
             (frame?.FrameIndex ?? 0).ToString(CultureInfo.InvariantCulture);
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PassId] = passId;
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PassReadiness] = "Passes.{Aisthesis,SpatialReasoning,HudComposite}:ShaderBound=false,PipelineCached=false,BuiltInExecutor=false,InjectedExecutor=false,ReadyForBuiltIn=false";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PathRole] = ResolvePathRole(passId);
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPassId] = passId;
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPassReadiness] = "Passes.{Aisthesis,SpatialReasoning,HudComposite}:ShaderBound=false,PipelineCached=false,BuiltInExecutor=false,InjectedExecutor=false,ReadyForBuiltIn=false";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPathRole] = ResolvePathRole(passId);
         var nativeAvailable = nativeStatus.BridgeAvailable && nativeStatus.RuntimeAvailable;
         AddNativeDispatchMetadata(metadata, nativeAvailable, frame);
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PilotState] = nativeAvailable
-            ? GpuRev3PilotStates.ProbeNativeCandidate
-            : GpuRev3PilotStates.ProbeReady;
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionGate] = GpuRev3PromotionGates.NativeBridgeRequired;
-        metadata[GpuDiagnosticsMetadataKeys.Rev3RequiredStreak] = "0";
-        metadata[GpuDiagnosticsMetadataKeys.Rev3SampleTicks] =
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPilotState] = nativeAvailable
+            ? GpuCanonicalPilotStates.ProbeNativeCandidate
+            : GpuCanonicalPilotStates.ProbeReady;
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionGate] = GpuPromotionGates.NativeBridgeRequired;
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalRequiredStreak] = "0";
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalSampleTicks] =
             (frame?.SampleTicks ?? 0).ToString(CultureInfo.InvariantCulture);
         AddPromotionReadinessMetadata(metadata);
         ValidateCanonicalDiagnosticsMetadata(metadata, passId);
@@ -118,19 +118,19 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
 
     private static void AddPromotionReadinessMetadata(SortedDictionary<string, string> metadata)
     {
-        var readiness = GpuCanonicalValidation.EvaluateRev3PromotionReadiness(
+        var readiness = GpuCanonicalValidation.EvaluatePromotionReadiness(
             new Dictionary<string, string>(metadata, StringComparer.Ordinal));
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionBlocked] = Flag(readiness.IsBlocked);
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionCandidateReady] = Flag(readiness.IsPromotionCandidate);
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionDiagnosticStable] = Flag(readiness.IsDiagnosticStable);
-        metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionReason] = readiness.Reason;
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionBlocked] = Flag(readiness.IsBlocked);
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionCandidateReady] = Flag(readiness.IsPromotionCandidate);
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionDiagnosticStable] = Flag(readiness.IsDiagnosticStable);
+        metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionReason] = readiness.Reason;
     }
 
     private static void ValidateCanonicalDiagnosticsMetadata(
         SortedDictionary<string, string> metadata,
         string passId)
     {
-        var validation = GpuCanonicalValidation.ValidateRev3DiagnosticsMetadata(
+        var validation = GpuCanonicalValidation.ValidateDiagnosticsMetadata(
             metadata,
             $"{passId}.metadata");
         if (validation.IsValid)
@@ -142,7 +142,7 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
             "; ",
             validation.Errors.Select(issue => $"{issue.Code}:{issue.Path ?? "(metadata)"}"));
         throw new InvalidOperationException(
-            $"LibTorch diagnostics metadata failed canonical rev3 validation for '{passId}': {details}");
+            $"LibTorch diagnostics metadata failed canonical validation for '{passId}': {details}");
     }
 
     private static string Flag(bool value) => value ? "true" : "false";
@@ -151,7 +151,7 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
         GpuFrameToken? frame,
         string passId)
     {
-        var target = string.Equals(passId, GpuRev3PathRoles.Hud, StringComparison.OrdinalIgnoreCase)
+        var target = string.Equals(passId, GpuPathRoles.Hud, StringComparison.OrdinalIgnoreCase)
             ? frame?.HudTarget ?? frame?.RawTarget
             : frame?.RawTarget;
         if (target is null || target.Width <= 0 || target.Height <= 0)
@@ -172,7 +172,7 @@ public sealed class LibTorchDiagnosticsProvider : IGpuDiagnostics
 
     private static string ResolvePathRole(string passId)
     {
-        return GpuRev3PathRoles.TryResolveFromPassId(passId, out var role)
+        return GpuPathRoles.TryResolveFromPassId(passId, out var role)
             ? role
             : "unknown";
     }

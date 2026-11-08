@@ -37,7 +37,7 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Contains(GpuPermissionNames.BufferWrite, descriptor.RequiredPermissions);
         Assert.Equal("cdecl", descriptor.Metadata["abi.calling_convention"]);
         Assert.Equal("libtorch_bridge", descriptor.Metadata["abi.library"]);
-        Assert.Equal("true", descriptor.Metadata[GpuProviderMetadataKeys.Rev3]);
+        Assert.Equal("true", descriptor.Metadata[GpuProviderMetadataKeys.Canonical]);
         Assert.Equal("cuda13.0", descriptor.Metadata[GpuProviderMetadataKeys.Backend]);
         Assert.Equal("native-abi", descriptor.Metadata[GpuProviderMetadataKeys.PassBridge]);
         Assert.Equal("native-cuda-buffer-dispatch", descriptor.Metadata[GpuProviderMetadataKeys.GpuBypass]);
@@ -47,10 +47,10 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Equal("native-cuda-device-buffer", descriptor.Metadata[GpuProviderMetadataKeys.ZeroCopyBufferHandling]);
         Assert.Equal(GpuBackend.Cuda.ToString(), descriptor.Metadata[GpuProviderMetadataKeys.GpuBackend]);
         Assert.Contains(nameof(GpuProviderCapabilities.SupportsCompute), descriptor.Metadata[GpuProviderMetadataKeys.GpuCapabilities]);
-        Assert.Equal("aikernel.gpu.rev3", descriptor.Metadata[GpuProviderMetadataKeys.ProviderFamily]);
+        Assert.Equal("aikernel.gpu.canonical", descriptor.Metadata[GpuProviderMetadataKeys.ProviderFamily]);
         Assert.Equal("cuda13-native-compute", descriptor.Metadata[GpuProviderMetadataKeys.ProviderRole]);
-        Assert.Equal("native-cuda-abi", descriptor.Metadata[GpuDiagnosticsMetadataKeys.Rev3ExecutionMode]);
-        Assert.Equal(GpuOperationNames.ComputeDispatch, descriptor.Metadata[GpuDiagnosticsMetadataKeys.Rev3PassId]);
+        Assert.Equal("native-cuda-abi", descriptor.Metadata[GpuDiagnosticsMetadataKeys.CanonicalExecutionMode]);
+        Assert.Equal(GpuOperationNames.ComputeDispatch, descriptor.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPassId]);
         Assert.Equal("13.0", descriptor.Metadata["cuda.version"]);
         Assert.Equal("win-x64", descriptor.Metadata["rid"]);
         Assert.Equal("AIKernel.Cuda13.0.Libtorch2.12.win-x64", descriptor.Metadata["package.id"]);
@@ -71,7 +71,7 @@ public sealed class LibTorchCapabilityModuleTests
         var probeValidation = GpuCanonicalValidation.ValidateNativeAbiProbeMetadata(
             GpuBackend.Cuda,
             descriptor.Metadata);
-        var executionLayerValidation = GpuCanonicalValidation.ValidateRev3ExecutionLayerMetadata(
+        var executionLayerValidation = GpuCanonicalValidation.ValidateExecutionLayerMetadata(
             descriptor.Metadata);
 
         Assert.True(probeValidation.IsValid);
@@ -79,7 +79,7 @@ public sealed class LibTorchCapabilityModuleTests
     }
 
     [Fact]
-    public async Task DiagnosticsProvider_ProjectsCanonicalRev3ProbeDiagnostics()
+    public async Task DiagnosticsProvider_ProjectsCanonicalProbeDiagnostics()
     {
         var diagnosticsProvider = Assert.IsAssignableFrom<IGpuDiagnostics>(new LibTorchDiagnosticsProvider());
         var frame = new GpuFrameToken
@@ -118,11 +118,11 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Equal("loader-not-configured", diagnostics.SensorPath.FallbackReason);
         Assert.Equal(320 * 200, diagnostics.SensorPath.MemoryEstimate);
         Assert.Equal(320 * 200 * 4, diagnostics.HudPath.MemoryEstimate);
-        Assert.Equal("sensor", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PathRole]);
-        Assert.Equal("sensor", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PassId]);
-        Assert.Equal("1", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3FrameIndex]);
-        Assert.Equal("100", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3SampleTicks]);
-        Assert.Equal("native-cuda-abi-probe", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3ExecutionMode]);
+        Assert.Equal("sensor", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPathRole]);
+        Assert.Equal("sensor", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPassId]);
+        Assert.Equal("1", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalFrameIndex]);
+        Assert.Equal("100", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalSampleTicks]);
+        Assert.Equal("native-cuda-abi-probe", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalExecutionMode]);
         Assert.Equal("1", diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.AbiVersionMetadataKey]);
         Assert.Equal(
             nameof(Cuda13NativeDispatchStatus.NotInitialized),
@@ -132,22 +132,22 @@ public sealed class LibTorchCapabilityModuleTests
             diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.FailureReasonMetadataKey]);
         Assert.Equal("1", diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.FrameIndexMetadataKey]);
         Assert.Equal("100", diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.SampleTicksMetadataKey]);
-        Assert.Equal("true", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionBlocked]);
-        Assert.Equal("false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionCandidateReady]);
-        Assert.Equal("false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionDiagnosticStable]);
+        Assert.Equal("true", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionBlocked]);
+        Assert.Equal("false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionCandidateReady]);
+        Assert.Equal("false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionDiagnosticStable]);
         Assert.Equal(
-            GpuRev3PromotionGates.NativeBridgeRequired,
-            diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionReason]);
+            GpuPromotionGates.NativeBridgeRequired,
+            diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionReason]);
         Assert.Equal("native-cuda-buffer-dispatch", diagnostics.SensorPath.Metadata[GpuProviderMetadataKeys.GpuBypass]);
         Assert.Equal("native-cuda-device-buffer", diagnostics.SensorPath.Metadata[GpuProviderMetadataKeys.ZeroCopyBufferHandling]);
-        Assert.Contains("ReadyForBuiltIn=false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PassReadiness]);
-        Assert.True(GpuCanonicalValidation.EvaluateRev3PromotionReadiness(
+        Assert.Contains("ReadyForBuiltIn=false", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPassReadiness]);
+        Assert.True(GpuCanonicalValidation.EvaluatePromotionReadiness(
             diagnostics.SensorPath.Metadata).IsBlocked);
         Assert.True(GpuCanonicalValidation.ValidateNativeAbiProbeMetadata(
             GpuBackend.Cuda,
             diagnostics.SensorPath.Metadata).IsValid);
-        Assert.True(GpuCanonicalValidation.ValidateRev3ExecutionLayerMetadata(diagnostics.SensorPath.Metadata).IsValid);
-        Assert.True(GpuCanonicalValidation.ValidateRev3DiagnosticsMetadata(
+        Assert.True(GpuCanonicalValidation.ValidateExecutionLayerMetadata(diagnostics.SensorPath.Metadata).IsValid);
+        Assert.True(GpuCanonicalValidation.ValidateDiagnosticsMetadata(
             diagnostics.SensorPath.Metadata,
             "sensor.metadata").IsValid);
         Assert.True(GpuCanonicalValidation.ValidateFrameDiagnostics(diagnostics).IsValid);
@@ -162,14 +162,14 @@ public sealed class LibTorchCapabilityModuleTests
             frame: null,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal("0", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3FrameIndex]);
-        Assert.Equal("0", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3SampleTicks]);
+        Assert.Equal("0", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalFrameIndex]);
+        Assert.Equal("0", diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalSampleTicks]);
         Assert.Equal("0", diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.FrameIndexMetadataKey]);
         Assert.Equal("0", diagnostics.SensorPath.Metadata[Cuda13NativeDispatchResponse.SampleTicksMetadataKey]);
         Assert.Equal(
-            GpuRev3PromotionGates.NativeBridgeRequired,
-            diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.Rev3PromotionReason]);
-        Assert.True(GpuCanonicalValidation.ValidateRev3DiagnosticsMetadata(
+            GpuPromotionGates.NativeBridgeRequired,
+            diagnostics.SensorPath.Metadata[GpuDiagnosticsMetadataKeys.CanonicalPromotionReason]);
+        Assert.True(GpuCanonicalValidation.ValidateDiagnosticsMetadata(
             diagnostics.SensorPath.Metadata,
             "sensor.metadata").IsValid);
         Assert.True(GpuCanonicalValidation.ValidateFrameDiagnostics(diagnostics).IsValid);
@@ -196,7 +196,7 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.Equal("LIBTORCH_FORWARD_REQUEST_INVALID", result.ErrorCode);
         Assert.Equal(GpuOperationNames.ComputeDispatch, result.Metadata["operation"]);
         Assert.Equal("true", result.Metadata["fail_closed"]);
-        Assert.Equal("true", result.Metadata[GpuProviderMetadataKeys.Rev3]);
+        Assert.Equal("true", result.Metadata[GpuProviderMetadataKeys.Canonical]);
         Assert.Equal(GpuBackend.Cuda.ToString(), result.Metadata[GpuProviderMetadataKeys.GpuBackend]);
         Assert.Equal("native-cuda-buffer-dispatch", result.Metadata[GpuProviderMetadataKeys.GpuBypass]);
         Assert.Equal("native-cuda-device-buffer", result.Metadata[GpuProviderMetadataKeys.ZeroCopyBufferHandling]);
@@ -211,7 +211,7 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.True(GpuCanonicalValidation.ValidateNativeAbiProbeMetadata(
             GpuBackend.Cuda,
             result.Metadata).IsValid);
-        Assert.True(GpuCanonicalValidation.ValidateRev3ExecutionLayerMetadata(result.Metadata).IsValid);
+        Assert.True(GpuCanonicalValidation.ValidateExecutionLayerMetadata(result.Metadata).IsValid);
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public sealed class LibTorchCapabilityModuleTests
                 [GpuProviderMetadataKeys.Backend] = GpuBackend.WebGpu.ToString(),
                 [GpuProviderMetadataKeys.GpuBackend] = GpuBackend.WebGpu.ToString(),
                 [GpuProviderMetadataKeys.GpuBypass] = "raw-texture-binding",
-                [GpuProviderMetadataKeys.NativeJsBridge] = "rev3-envelope-bridge",
+                [GpuProviderMetadataKeys.NativeJsBridge] = "canonical-envelope-bridge",
                 [GpuProviderMetadataKeys.PassBridge] = "optional-native-or-js",
                 [GpuProviderMetadataKeys.ZeroCopyBufferHandling] = "raw-framebuffer-texture"
             });
@@ -251,7 +251,7 @@ public sealed class LibTorchCapabilityModuleTests
         Assert.True(GpuCanonicalValidation.ValidateNativeAbiProbeMetadata(
             GpuBackend.Cuda,
             result.Metadata).IsValid);
-        Assert.True(GpuCanonicalValidation.ValidateRev3ExecutionLayerMetadata(result.Metadata).IsValid);
+        Assert.True(GpuCanonicalValidation.ValidateExecutionLayerMetadata(result.Metadata).IsValid);
     }
 
     [Fact]
@@ -303,7 +303,7 @@ public sealed class LibTorchCapabilityModuleTests
             Assert.True(GpuCanonicalValidation.ValidateNativeAbiProbeMetadata(
                 GpuBackend.Cuda,
                 result.Metadata).IsValid);
-            Assert.True(GpuCanonicalValidation.ValidateRev3ExecutionLayerMetadata(result.Metadata).IsValid);
+            Assert.True(GpuCanonicalValidation.ValidateExecutionLayerMetadata(result.Metadata).IsValid);
         }
         finally
         {
