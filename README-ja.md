@@ -61,7 +61,7 @@ dotnet add package AIKernel.Cuda13.0.Libtorch2.12.win-x64 --version 0.1.3
 ```
 
 Managed package は `LibTorchCapabilityDescriptor.Create()`、`LibTorchCapabilityInvoker`、
-`load_model` / `unload_model` / `forward` の C ABI 操作、そして rev3 staged native
+`load_model` / `unload_model` / `forward` の C ABI 操作、そして canonical staged native
 dispatch probe である `aikernel_cuda13_dispatch` を公開します。
 
 NuGet package は `loader.json` を含みます。次のいずれかで設定できます。
@@ -83,7 +83,7 @@ Consuming application の横に展開するか、`AIKERNEL_CUDA13_LIBTORCH2_12_W
 
 Public C ABI は安定境界です。LibTorch、CUDA、C++ 型を ABI 境界へ公開してはいけません。
 
-rev3 native dispatch entrypoint は、この line では意図的に fail-closed です。
+canonical native dispatch entrypoint は、この line では意図的に fail-closed です。
 canonical 40-byte request header を受け取り、frame index と sample ticks を保持し、
 `InvalidRequestLength`、`UnknownPass`、`DeviceUnavailable`、
 `CommandSubmissionDisabled` などの deterministic failure reason を返します。

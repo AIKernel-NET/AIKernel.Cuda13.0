@@ -53,7 +53,7 @@ print(cuda_capability.bundled_managed_assemblies())
 print(cuda_capability.bundled_native_libraries())
 ```
 
-For canonical rev3 GPU integration checks, the Python wrapper can also expose
+For canonical GPU integration checks, the Python wrapper can also expose
 the matching native verification commands:
 
 ```python

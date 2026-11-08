@@ -81,7 +81,7 @@ CUDA, cuDNN, or cuBLAS runtime binaries.
 ## Native Verification Boundary
 
 The Python wrapper exposes `native_verification_commands()` for tooling that
-needs to print the canonical rev3 package and library verification commands.
+needs to print the canonical package and library verification commands.
 The commands intentionally stay external to Python execution:
 
 - package mode validates packaged loader/runtime entries without loading

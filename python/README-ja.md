@@ -41,7 +41,7 @@ print(config.native_library)
 print(config.resolved_runtime_search_paths())
 ```
 
-canonical rev3 GPU integration check 用に、Python wrapper から対応する
+canonical GPU integration check 用に、Python wrapper から対応する
 native verification command も取得できます。
 
 ```python

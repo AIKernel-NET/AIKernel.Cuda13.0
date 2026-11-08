@@ -68,7 +68,7 @@ DLL と native bridge DLL も含みますが、LibTorch、CUDA、cuDNN、cuBLAS 
 含みません。
 ## Native Verification Boundary
 
-Python wrapper は、tooling が canonical rev3 package / library verification command
+Python wrapper は、tooling が canonical package / library verification command
 を表示できるように `native_verification_commands()` を公開します。これらの command は
 意図的に Python execution の外側に置きます。
 

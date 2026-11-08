@@ -68,7 +68,7 @@ The managed package exposes:
 - `LibTorchCapabilityDescriptor.Create()`
 - `LibTorchCapabilityInvoker`
 - C ABI operations: `load_model`, `unload_model`, `forward`
-- staged rev3 native dispatch probe: `aikernel_cuda13_dispatch`
+- staged canonical native dispatch probe: `aikernel_cuda13_dispatch`
 
 The NuGet package includes `loader.json`. Configure it by setting one of:
 
@@ -98,7 +98,7 @@ runtime/win-x64/libtorch/**
 The public C ABI is stable. Do not expose LibTorch, CUDA, or C++ types across
 the ABI boundary.
 
-The rev3 native dispatch entrypoint is intentionally fail-closed in this line.
+The canonical native dispatch entrypoint is intentionally fail-closed in this line.
 It accepts the canonical 40-byte request header, preserves frame index and
 sample ticks, and reports deterministic failure reasons such as
 `InvalidRequestLength`, `UnknownPass`, `DeviceUnavailable`, and
