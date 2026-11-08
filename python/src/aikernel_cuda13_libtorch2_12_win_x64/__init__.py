@@ -159,10 +159,10 @@ def native_verification_commands(
     library_path: str = "native/build/win-x64/Release/libtorch_bridge.dll",
 ) -> tuple[str, str]:
     """[EN]
-    Returns the canonical rev3 native verification commands for this package.
+    Returns the canonical native verification commands for this package.
 
     [JA]
-    この package 用の canonical rev3 native verification command を返します。
+    この package 用の canonical native verification command を返します。
     """
 
     return (
