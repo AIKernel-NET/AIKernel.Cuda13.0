@@ -24,6 +24,8 @@ constexpr int32_t kLoadFailed = -3;
 constexpr int32_t kForwardFailed = -4;
 constexpr int32_t kMaxOutputTokens = 64;
 constexpr int32_t kMaxLogits = 4096;
+constexpr uint32_t kDispatchAbiVersion = 1;
+constexpr uint32_t kDispatchStatusNotInitialized = 4;
 
 struct MemoryRegion {
   explicit MemoryRegion(std::string model_path) : path(std::move(model_path)) {}
@@ -151,6 +153,41 @@ int32_t copy_logits_to_result(
   return kSuccess;
 }
 
+bool is_known_pass(uint32_t pass_id) {
+  return pass_id == AIKERNEL_CUDA13_PASS_COMPUTE_DISPATCH ||
+      pass_id == AIKERNEL_CUDA13_PASS_LOAD_MODEL ||
+      pass_id == AIKERNEL_CUDA13_PASS_UNLOAD_MODEL ||
+      pass_id == AIKERNEL_CUDA13_PASS_FORWARD ||
+      pass_id == AIKERNEL_CUDA13_PASS_AISTHESIS ||
+      pass_id == AIKERNEL_CUDA13_PASS_SPATIAL_REASONING ||
+      pass_id == AIKERNEL_CUDA13_PASS_HUD_COMPOSITE;
+}
+
+uint32_t write_dispatch_response(
+    void* response,
+    uint32_t response_length,
+    uint32_t status,
+    uint32_t failure_reason,
+    uint64_t frame_index,
+    uint64_t sample_ticks) {
+  if (response == nullptr ||
+      response_length < sizeof(AIKernelCuda13DispatchResponseHeader)) {
+    return kDispatchStatusNotInitialized;
+  }
+
+  auto* header = static_cast<AIKernelCuda13DispatchResponseHeader*>(response);
+  std::memset(header, 0, sizeof(AIKernelCuda13DispatchResponseHeader));
+  header->abi_version = kDispatchAbiVersion;
+  header->header_size = static_cast<uint32_t>(sizeof(AIKernelCuda13DispatchResponseHeader));
+  header->status = status;
+  header->failure_reason = failure_reason;
+  header->frame_index = frame_index;
+  header->sample_ticks = sample_ticks;
+  header->diagnostics_bytes = 0;
+  header->reserved = 0;
+  return status;
+}
+
 }  // namespace
 
 extern "C" {
@@ -218,6 +255,53 @@ AIKERNEL_EXPORT int32_t forward(
     out_result->status = kForwardFailed;
     return kForwardFailed;
   }
+}
+
+AIKERNEL_EXPORT uint32_t aikernel_cuda13_dispatch(
+    const void* request,
+    uint32_t request_length,
+    void* response,
+    uint32_t response_length) {
+  if (request == nullptr ||
+      request_length < sizeof(AIKernelCuda13DispatchRequestHeader)) {
+    return write_dispatch_response(
+        response,
+        response_length,
+        kDispatchStatusNotInitialized,
+        AIKERNEL_CUDA13_FAILURE_INVALID_REQUEST_LENGTH,
+        0,
+        0);
+  }
+
+  const auto* header = static_cast<const AIKernelCuda13DispatchRequestHeader*>(request);
+  if (header->abi_version != kDispatchAbiVersion ||
+      header->header_size < sizeof(AIKernelCuda13DispatchRequestHeader)) {
+    return write_dispatch_response(
+        response,
+        response_length,
+        kDispatchStatusNotInitialized,
+        AIKERNEL_CUDA13_FAILURE_INVALID_ABI,
+        header->frame_index,
+        header->sample_ticks);
+  }
+
+  if (!is_known_pass(header->pass_id)) {
+    return write_dispatch_response(
+        response,
+        response_length,
+        kDispatchStatusNotInitialized,
+        AIKERNEL_CUDA13_FAILURE_UNKNOWN_PASS,
+        header->frame_index,
+        header->sample_ticks);
+  }
+
+  return write_dispatch_response(
+      response,
+      response_length,
+      kDispatchStatusNotInitialized,
+      AIKERNEL_CUDA13_FAILURE_COMMAND_SUBMISSION_DISABLED,
+      header->frame_index,
+      header->sample_ticks);
 }
 
 }  // extern "C"
