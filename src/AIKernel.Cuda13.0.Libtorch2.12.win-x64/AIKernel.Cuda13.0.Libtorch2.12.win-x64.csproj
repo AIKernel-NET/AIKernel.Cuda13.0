@@ -64,4 +64,8 @@
     <None Include="$(AIKernelNativeBridgePath)" Pack="true" PackagePath="runtimes\win-x64\native\" />
   </ItemGroup>
 
+  <Target Name="ValidateNativeBridgeForPack" BeforeTargets="GenerateNuspec">
+    <Error Condition="!Exists('$(AIKernelNativeBridgePath)')"
+           Text="The native LibTorch bridge is required for this package. Build native/build/win-x64/Release/libtorch_bridge.dll or set AIKernelNativeBridgePath to the verified bridge before packing." />
+  </Target>
 </Project>
