@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
 
     <StablePackageVersion>0.1.3</StablePackageVersion>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>0.1.3</PackageValidationBaselineVersion>
     <LocalPackageVersionPrefix>0.1.3</LocalPackageVersionPrefix>
     <LocalPackageBuildNumber Condition="'$(LocalPackageBuildNumber)' == ''">0</LocalPackageBuildNumber>
     <UseLocalPackageVersion Condition="'$(UseLocalPackageVersion)' == ''">false</UseLocalPackageVersion>
@@ -62,4 +64,8 @@
     <None Include="$(AIKernelNativeBridgePath)" Pack="true" PackagePath="runtimes\win-x64\native\" />
   </ItemGroup>
 
+  <Target Name="ValidateNativeBridgeForPack" BeforeTargets="GenerateNuspec">
+    <Error Condition="!Exists('$(AIKernelNativeBridgePath)')"
+           Text="The native LibTorch bridge is required for this package. Build native/build/win-x64/Release/libtorch_bridge.dll or set AIKernelNativeBridgePath to the verified bridge before packing." />
+  </Target>
 </Project>
