@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.0.x'
+          global-json-file: global.json
 
       - name: Restore
         run: dotnet restore AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx
@@ -32,6 +32,10 @@ jobs:
         run: dotnet build AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-restore
       - name: Test
         run: dotnet test AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-build --no-restore
-      - name: Pack
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-build --no-restore
+      - name: Verify packing requires the Windows native bridge
+        shell: bash
+        run: |
+          if dotnet pack AIKernel.Cuda13.0.Libtorch2.12.win-x64.slnx -c Release --no-build --no-restore -p:AIKernelNativeBridgePath="$RUNNER_TEMP/missing-bridge.dll" >pack.log 2>&1; then
+            exit 1
+          fi
+          grep -F 'The native LibTorch bridge is required' pack.log
