@@ -18,7 +18,7 @@ using CoreMemoryAccessMode = AIKernel.Core.Memory.MemoryAccessMode;
 /// <include file="docs.ja.xml" path="doc/members/member[@name='T:AIKernel.Cuda13.Libtorch2_12.WinX64.Capability.LibTorchCapabilityInvoker']" />
 public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
 {
-    private readonly IMemoryMapper? _memoryMapper;
+    private readonly Dictionary<int, string> _owners = new();
     private readonly LibTorchNativeAbiOptions _nativeAbiOptions;
 
     /// <summary>[EN] Documents this public package API member. [JA] LibTorchCapabilityInvoker を取得します。</summary>
@@ -28,7 +28,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         IMemoryMapper? memoryMapper = null,
         LibTorchNativeAbiOptions? nativeAbiOptions = null)
     {
-        _memoryMapper = memoryMapper;
+        // Retain the mapper parameter for callers compiled against the original ABI.
         _nativeAbiOptions = nativeAbiOptions ?? new LibTorchNativeAbiOptions();
     }
 
@@ -53,7 +53,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
                 "The LibTorch invoker can only execute the LibTorch CUDA capability."));
         }
 
-        return request.Operation switch
+        lock (_owners) return request.Operation switch
         {
             GpuOperationNames.ComputeDispatch => Forward(request, cancellationToken),
             "load_model" => LoadModel(request, cancellationToken),
@@ -81,6 +81,9 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
                 "Argument 'path' is required for load_model."));
         }
 
+        var owner = _nativeAbiOptions.CallerIdentity();
+        if (string.IsNullOrWhiteSpace(owner))
+            return ValueTask.FromResult(Fail(request, "LIBTORCH_CALLER_REQUIRED", "An authenticated model owner is required."));
         var mappedPath = ResolveMappedModelPath(request, path);
         if (!mappedPath.Succeeded)
             return ValueTask.FromResult(mappedPath.Result!);
@@ -105,6 +108,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         }
 
         var metadata = CreateMetadata(request);
+        _owners[statusOrHandle] = owner;
         metadata["model_handle"] = statusOrHandle.ToString(CultureInfo.InvariantCulture);
         metadata["model_path_hash"] = Hash(mappedPath.Path!);
         if (mappedPath.RegionLength is { } regionLength)
@@ -133,6 +137,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
                 errorMessage));
         }
 
+        if (!Owns(modelHandle)) return ValueTask.FromResult(Fail(request, "LIBTORCH_MODEL_HANDLE_INVALID", "Model handle is unavailable."));
         int status;
 
         try
@@ -153,6 +158,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         }
 
         var metadata = CreateMetadata(request);
+        _owners.Remove(modelHandle);
         metadata["model_handle"] = modelHandle.ToString(CultureInfo.InvariantCulture);
 
         return ValueTask.FromResult(Success(
@@ -178,6 +184,7 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
         }
 
         var forwardRequest = parse.Value;
+        if (!Owns(forwardRequest.ModelHandle)) return ValueTask.FromResult(Fail(request, "LIBTORCH_MODEL_HANDLE_INVALID", "Model handle is unavailable."));
         var nativeResult = new ForwardResultNative();
         int status;
 
@@ -395,39 +402,32 @@ public sealed class LibTorchCapabilityInvoker : ICapabilityModuleInvoker
             => new(false, null, null, result);
     }
 
+    private bool Owns(int handle) => _owners.TryGetValue(handle, out var owner) && string.Equals(owner, _nativeAbiOptions.CallerIdentity(), StringComparison.Ordinal);
+
     private MappedModelPath ResolveMappedModelPath(
         CapabilityInvocationRequest request,
         string path)
     {
-        if (_memoryMapper is null)
-            return MappedModelPath.Success(path, regionLength: null);
-
-        IMemoryRegion region;
+        var root = _nativeAbiOptions.ModelRoot;
+        if (root is null || !Path.IsPathFullyQualified(root))
+            return MappedModelPath.Fail(Fail(request, "LIBTORCH_MODEL_ROOT_REQUIRED", "An absolute model root must be configured."));
         try
         {
-            region = _memoryMapper.Open(path, CoreMemoryAccessMode.Read);
-        }
-        catch (Exception ex)
-        {
-            return MappedModelPath.Fail(Fail(
-                request,
-                "LIBTORCH_MEMORY_MAP_FAILED",
-                ex.Message));
-        }
-
-        using (region)
-        {
-            if (!region.IsMapped || region.Pointer == IntPtr.Zero)
+            var full = Path.GetFullPath(path, root);
+            var relative = Path.GetRelativePath(root, full);
+            if (relative == "." || relative == ".." || Path.IsPathRooted(relative) || relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+                throw new IOException();
+            var current = Path.GetFullPath(root);
+            foreach (var segment in new[] { "." }.Concat(relative.Split(Path.DirectorySeparatorChar)))
             {
-                return MappedModelPath.Fail(Fail(
-                    request,
-                    "LIBTORCH_MEMORY_MAP_FAILED",
-                    "Memory mapper returned an unmapped model region."));
+                current = Path.GetFullPath(Path.Combine(current, segment));
+                if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw new IOException();
             }
-
-            return MappedModelPath.Success(
-                region.Info.Path,
-                region.Length);
+            return MappedModelPath.Success(full, new FileInfo(full).Length);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            return MappedModelPath.Fail(Fail(request, "LIBTORCH_MODEL_PATH_INVALID", "The model is unavailable under its configured root."));
         }
     }
 }

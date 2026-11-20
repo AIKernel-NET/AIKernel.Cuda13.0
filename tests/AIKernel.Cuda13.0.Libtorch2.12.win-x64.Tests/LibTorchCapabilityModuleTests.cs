@@ -737,7 +737,7 @@ public sealed class LibTorchCapabilityModuleTests
     }
 
     [Fact]
-    public async Task InvokeAsync_ReturnsFailClosedWhenMemoryMapperCannotOpenModel()
+    public async Task InvokeAsync_RequiresAuthenticatedOwnerBeforeModelAccess()
     {
         var invoker = new LibTorchCapabilityInvoker(new FailingMemoryMapper());
         var request = new CapabilityInvocationRequest(
@@ -757,19 +757,19 @@ public sealed class LibTorchCapabilityModuleTests
             TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
-        Assert.Equal("LIBTORCH_MEMORY_MAP_FAILED", result.ErrorCode);
+        Assert.Equal("LIBTORCH_CALLER_REQUIRED", result.ErrorCode);
         Assert.Equal("sha256:replay", result.ReplayLogHash);
         Assert.Equal("true", result.Metadata["fail_closed"]);
         Assert.Equal("libtorch_native_abi", result.Metadata["failure_origin"]);
     }
 
     [Fact]
-    public async Task InvokeAsync_UsesMappedModelPathBeforeNativeLoad()
+    public async Task InvokeAsync_RejectsUnconfiguredModelRootBeforeMapping()
     {
         var mapper = new SuccessfulMemoryMapper(
             "mapped-model.pt",
             1234);
-        var invoker = new LibTorchCapabilityInvoker(mapper);
+        var invoker = new LibTorchCapabilityInvoker(mapper, new LibTorchNativeAbiOptions { CallerIdentity = () => "test-user" });
         var request = new CapabilityInvocationRequest(
             InvocationId: "invoke-load-mapped-native-missing",
             CapabilityId: LibTorchCapabilityDescriptor.CapabilityId,
@@ -786,10 +786,9 @@ public sealed class LibTorchCapabilityModuleTests
             request,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal("logical-model.pt", mapper.OpenedPath);
-        Assert.Equal(CoreMemoryAccessMode.Read, mapper.OpenedAccessMode);
+        Assert.Null(mapper.OpenedPath);
         Assert.False(result.Succeeded);
-        Assert.Equal("LIBTORCH_NATIVE_ABI_UNAVAILABLE", result.ErrorCode);
+        Assert.Equal("LIBTORCH_MODEL_ROOT_REQUIRED", result.ErrorCode);
         Assert.Equal("sha256:replay", result.ReplayLogHash);
         Assert.Equal("true", result.Metadata["fail_closed"]);
     }

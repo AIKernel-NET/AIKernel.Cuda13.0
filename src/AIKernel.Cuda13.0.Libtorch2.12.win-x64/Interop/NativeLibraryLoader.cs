@@ -38,14 +38,13 @@ internal static class NativeLibraryLoader
                 return s_handle;
 
             var config = LoaderConfig.Load();
-            RegisterRuntimeSearchPaths(config);
 
             foreach (var candidate in BuildNativeLibraryCandidates(config))
             {
                 if (!File.Exists(candidate))
                     continue;
 
-                s_handle = NativeLibrary.Load(candidate);
+                s_handle = LoadBridge(candidate, config);
                 return s_handle;
             }
 
@@ -64,41 +63,55 @@ internal static class NativeLibraryLoader
 
         foreach (var basePath in config.BasePaths())
         {
-            yield return Path.Combine(basePath, nativeLibrary);
+            yield return ResolveChild(basePath, nativeLibrary);
 
             if (!string.IsNullOrWhiteSpace(config.NativeAbiPath))
             {
-                yield return Path.Combine(
-                    basePath,
-                    NormalizeSeparators(config.NativeAbiPath),
-                    nativeLibrary);
+                yield return ResolveChild(basePath, Path.Combine(NormalizeSeparators(config.NativeAbiPath), nativeLibrary));
             }
         }
     }
 
-    private static void RegisterRuntimeSearchPaths(
-        LoaderConfig config)
+    private static IntPtr LoadBridge(string candidate, LoaderConfig config)
     {
-        var paths = config.ResolveRuntimeSearchPaths()
-            .Where(Directory.Exists)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        if (paths.Length == 0)
-            return;
-
-        if (OperatingSystem.IsWindows())
+        var cookies = new Stack<IntPtr>();
+        try
         {
-            _ = SetDefaultDllDirectories(LoadLibrarySearchDefaultDirs);
-            foreach (var path in paths)
+            foreach (var path in config.ResolveRuntimeSearchPaths().Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                _ = AddDllDirectory(path);
+                var cookie = AddDllDirectory(path);
+                if (cookie == IntPtr.Zero)
+                    throw new DllNotFoundException("Failed to resolve a native dependency in the configured runtime directories.", new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error()));
+                cookies.Push(cookie);
             }
+            var handle = LoadLibraryEx(candidate, IntPtr.Zero, 0x100 | 0x800 | (cookies.Count > 0 ? 0x400 : 0));
+            if (handle == IntPtr.Zero)
+                throw new DllNotFoundException("Failed to resolve a native dependency in the configured runtime directories.", new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error()));
+            return handle;
         }
+        finally
+        {
+            while (cookies.TryPop(out var cookie))
+                RemoveDllDirectory(cookie);
+        }
+    }
 
-        var currentPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        var nextPath = string.Join(Path.PathSeparator, paths.Concat([currentPath]));
-        Environment.SetEnvironmentVariable("PATH", nextPath);
+    private static string ResolveChild(string root, string child)
+    {
+        if (Path.IsPathRooted(child) || child.Contains(':'))
+            throw new InvalidDataException("Package paths must be relative.");
+        var full = Path.GetFullPath(child, root);
+        var relative = Path.GetRelativePath(root, full);
+        if (Path.IsPathRooted(relative) || relative == ".." || relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            throw new InvalidDataException("Package path is outside its root.");
+        var current = root;
+        foreach (var part in relative.Split(Path.DirectorySeparatorChar))
+        {
+            current = Path.Combine(current, part);
+            if (new FileInfo(current).LinkTarget is not null)
+                throw new InvalidDataException("Linked package paths are not supported.");
+        }
+        return full;
     }
 
     private static string NormalizeSeparators(
@@ -107,14 +120,16 @@ internal static class NativeLibraryLoader
             .Replace('\\', Path.DirectorySeparatorChar);
 
     [DllImport("kernel32", SetLastError = true)]
-    private static extern bool SetDefaultDllDirectories(
-        int directoryFlags);
+    private static extern bool RemoveDllDirectory(IntPtr cookie);
+
+    [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern IntPtr LoadLibraryEx(string path, IntPtr reserved, int flags);
 
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr AddDllDirectory(
         string newDirectory);
 
-    private const int LoadLibrarySearchDefaultDirs = 0x00001000;
+
 
     private sealed record LoaderConfig(
         [property: JsonPropertyName("nativeLibrary")]
@@ -163,36 +178,37 @@ internal static class NativeLibraryLoader
         {
             foreach (var rawPath in RuntimeSearchPaths ?? [])
             {
-                var expanded = ExpandEnvironmentVariables(rawPath);
-                if (string.IsNullOrWhiteSpace(expanded))
-                    continue;
-
-                var normalized = NormalizeSeparators(expanded);
-                if (Path.IsPathFullyQualified(normalized))
+                var path = NormalizeSeparators(rawPath);
+                if (path.StartsWith('%'))
                 {
-                    yield return normalized;
+                    var end = path.IndexOf('%', 1);
+                    if (end < 0) throw new InvalidDataException("Invalid runtime root.");
+                    var name = path[1..end];
+                    if (name is not ("AIKERNEL_LIBTORCH_PATH" or "AIKERNEL_CUDA13_LIBTORCH2_12_WIN_X64_HOME"))
+                        throw new InvalidDataException("Unknown runtime root.");
+                    var root = Environment.GetEnvironmentVariable(name);
+                    if (string.IsNullOrWhiteSpace(root)) continue;
+                    if (!Path.IsPathFullyQualified(root)) throw new InvalidDataException("Runtime root must be absolute.");
+                    var suffix = path[(end + 1)..];
+                    if (suffix.Length != 0 && suffix[0] != Path.DirectorySeparatorChar)
+                        throw new InvalidDataException("Invalid runtime path.");
+                    yield return ResolveChild(root, suffix.Length == 0 ? "." : suffix[1..]);
                     continue;
                 }
-
-                yield return Path.GetFullPath(Path.Combine(LoaderDirectory, normalized));
-                yield return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, normalized));
+                yield return ResolveChild(LoaderDirectory, path);
+                yield return ResolveChild(AppContext.BaseDirectory, path);
             }
-        }
-
-        private static string ExpandEnvironmentVariables(
-            string value)
-        {
-            var expanded = Environment.ExpandEnvironmentVariables(value);
-            return expanded.Contains('%', StringComparison.Ordinal)
-                ? string.Empty
-                : expanded;
         }
 
         private static string? FindLoaderPath()
         {
             var explicitPath = Environment.GetEnvironmentVariable(LoaderEnvironmentVariable);
-            if (!string.IsNullOrWhiteSpace(explicitPath) && File.Exists(explicitPath))
+            if (!string.IsNullOrWhiteSpace(explicitPath))
+            {
+                if (!Path.IsPathFullyQualified(explicitPath) || !File.Exists(explicitPath))
+                    throw new InvalidDataException("The explicit loader must be an existing absolute path.");
                 return explicitPath;
+            }
 
             var candidates = new[]
             {
@@ -201,8 +217,7 @@ internal static class NativeLibraryLoader
                 Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
                     AppContext.BaseDirectory,
-                    "loader.json"),
-                Path.Combine(Environment.CurrentDirectory, "loader.json")
+                    "loader.json")
             };
 
             return candidates.FirstOrDefault(File.Exists);

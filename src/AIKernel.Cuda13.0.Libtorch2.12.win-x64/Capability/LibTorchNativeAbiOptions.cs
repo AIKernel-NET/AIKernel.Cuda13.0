@@ -13,6 +13,12 @@ public sealed record LibTorchNativeAbiOptions
     public const string DefaultLibTorchPathEnvironmentVariable = "AIKERNEL_LIBTORCH_PATH";
 
     /// <summary>[EN] Optional explicit loader JSON path. [JA] 任意の明示 loader JSON path です。</summary>
+    public string? ModelRoot { get; init; }
+
+    /// <summary>Resolves a caller identifier from authenticated host context.</summary>
+    public Func<string?> CallerIdentity { get; init; } = () =>
+        Thread.CurrentPrincipal?.Identity is { IsAuthenticated: true } identity ? identity.Name : null;
+
     public string? LoaderPath { get; init; }
 
     /// <summary>[EN] Optional explicit LibTorch runtime path. [JA] 任意の明示 LibTorch runtime path です。</summary>
