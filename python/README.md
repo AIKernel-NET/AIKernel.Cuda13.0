@@ -1,5 +1,9 @@
 # aikernel-cuda13-libtorch2-12-win-x64
 
+**Maintenance ended. The successor is the CUDA Driver bundled with `AIKernel.Kernel` 0.1.4.**
+
+[CUDA Driver migration guide](https://github.com/AIKernel-NET/AIKernel.Providers/blob/dev/docs/CUDA-DRIVER-MIGRATION.md)
+
 [日本語](README-ja.md)
 
 Python wrapper package for the AIKernel CUDA 13.0 + LibTorch 2.12 Windows

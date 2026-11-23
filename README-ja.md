@@ -1,35 +1,20 @@
 # AIKernel.Cuda13.0.Libtorch2.12.win-x64
 
-[English README](README.md)
+**保守終了。後継は `AIKernel.Kernel` 0.1.4 の CUDA Driver です。**
 
-Windows `win-x64`、LibTorch 2.12.0、CUDA 13.0 という 1 つの runtime
-combination に対応する AIKernel external Capability module です。
+`AIKernel.Kernel` 0.1.4 は Windows x64 と Linux x64 向けの CUDA Driver を同梱します。実行時に必要なネイティブ依存は NVIDIA ドライバのみです。
 
-この repository は、CUDA-specific managed invoker、native C ABI bridge、
-loader configuration、runtime metadata を所有します。これらは意図的に
-AIKernel.Core から分離されています。
+[CUDA Driver 移行ガイド](https://github.com/AIKernel-NET/AIKernel.Providers/blob/dev/docs/CUDA-DRIVER-MIGRATION.md) · [English README](README.md)
 
-AIKernel.Core は CUDA-free です。この package は CUDA execution に明示的に opt-in
-する trusted GPU host にのみ install してください。
+このリポジトリは 0.1.3 までの旧 LibTorch 参照実装です。以降は既存環境の参照資料です。
 
-AIOS SDK において、AIKernel.Cuda13.0 は optional な GPU backend layer です。
-Windows CUDA 13.0 と LibTorch runtime の関心事を kernel runtime の外へ分離し、
-native accelerator execution が必要な distribution だけが明示的に opt-in できます。
+## セキュリティに関する告知
 
-AIKernel には、公式 AIOS ディストリビューションである **AIKernel.Monolith** もあります。
-Monolith は 0.1.x 系の安定化後に SDK layer を統合する標準 AIOS として
-開発が開始されています。optional GPU backend は引き続き明示的な opt-in component です。
+以下は公開済みの旧 LibTorch 版に関する注意事項です。
 
-この repository は AIKernel 0.1.3 publication preparation line に参加します。
-Core は CUDA-free のまま、Windows `win-x64` CUDA 13.0 + LibTorch 2.12.0
-runtime boundary をこの repository が所有する split を検証します。
-
-詳細な distribution rule は [docs/package-distribution-ja.md](docs/package-distribution-ja.md)
-を参照してください。
-
-0.1.3 のリポジトリ横断開発方針は [docs/README-ja.md](docs/README-ja.md) と
-[AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1-ja.md)
-を参照してください。
+- **CU-1** カレントディレクトリの `loader.json` を通じて意図しない DLL が読み込まれるおそれがあります。信頼できない作業ディレクトリでは使用しないでください。
+- **CU-2** 旧ローダーは DLL の検索パスを変更し、そのプロセスで解決される依存 DLL に影響する場合があります。承認済みのランタイムディレクトリだけを使用してください。
+- **CU-3** `load_model` は指定されたパスの TorchScript を読み込みます。信頼できないモデルファイルを渡さないでください。
 
 ## パッケージモデル
 

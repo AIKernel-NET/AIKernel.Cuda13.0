@@ -1,5 +1,9 @@
 # aikernel-cuda13-libtorch2-12-win-x64
 
+**保守終了。後継は `AIKernel.Kernel` 0.1.4 の CUDA Driver です。**
+
+[CUDA Driver 移行ガイド](https://github.com/AIKernel-NET/AIKernel.Providers/blob/dev/docs/CUDA-DRIVER-MIGRATION.md)
+
 [English](README.md)
 
 AIKernel CUDA 13.0 + LibTorch 2.12 Windows `win-x64` Capability の Python wrapper

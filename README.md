@@ -1,35 +1,20 @@
 # AIKernel.Cuda13.0.Libtorch2.12.win-x64
 
-[日本語 README](README-ja.md)
+**Maintenance ended. The successor is the CUDA Driver bundled with `AIKernel.Kernel` 0.1.4.**
 
-Reference external AIKernel Capability module for one runtime combination:
-Windows `win-x64`, LibTorch 2.12.0, and CUDA 13.0. This repository owns the
-CUDA-specific managed invoker, native C ABI bridge, loader configuration, and
-runtime metadata that were intentionally separated from AIKernel.Core.
+`AIKernel.Kernel` 0.1.4 bundles the CUDA Driver for Windows x64 and Linux x64. The NVIDIA driver is its only native runtime prerequisite.
 
-AIKernel.Core is CUDA-free. Install this package only on trusted GPU hosts that
-explicitly opt in to CUDA execution.
+[CUDA Driver migration guide](https://github.com/AIKernel-NET/AIKernel.Providers/blob/dev/docs/CUDA-DRIVER-MIGRATION.md) · [日本語 README](README-ja.md)
 
-In the AIOS SDK, AIKernel.Cuda13.0 is an optional GPU backend layer. It keeps
-Windows CUDA 13.0 and LibTorch runtime concerns outside the kernel runtime while
-letting a distribution opt in to native accelerator execution.
+This repository contains the legacy LibTorch reference implementation through 0.1.3. The sections below document existing installations.
 
-AIKernel also provides an official AIOS distribution, codenamed
-**AIKernel.Monolith**. Monolith has begun development as the standard AIOS that
-integrates SDK layers after the 0.1.x line stabilizes; optional GPU backends
-remain explicit opt-in components.
+## Security notice
 
-This repository participates in the AIKernel 0.1.3 publication preparation
-line. It validates the external Capability split: Core remains CUDA-free, while
-this repository owns the Windows `win-x64` CUDA 13.0 + LibTorch 2.12.0 runtime
-boundary.
+These cautions apply to the published legacy LibTorch packages.
 
-For the full split-distribution rules, see
-[`docs/package-distribution.md`](docs/package-distribution.md).
-
-For cross-repository 0.1.3 development rules, see
-[`docs/README.md`](docs/README.md) and
-[AIKernel Repository Alignment v0.1.1.1](https://github.com/AIKernel-NET/AIKernel.NET/blob/main/docs/development/repository-alignment-v0.1.1.1.md).
+- **CU-1** The legacy loader can load arbitrary DLLs through `loader.json` in the current working directory. Use the package only from a trusted working directory.
+- **CU-2** The legacy loader changes the DLL search path, which can affect dependency resolution in the process. Use only trusted runtime directories.
+- **CU-3** `load_model` reads TorchScript from the supplied path. Load only trusted model files.
 
 ## Package Model
 
